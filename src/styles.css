@@ -1,0 +1,402 @@
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #2a1020;
+  background:
+    radial-gradient(circle at top, rgba(255, 210, 226, 0.9), rgba(255, 241, 246, 0.96) 32%, #fff8fb 70%),
+    #fff8fb;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button {
+  font: inherit;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Mobile-first shell */
+.app-shell {
+  position: relative;
+  display: grid;
+  gap: 1rem;
+  width: calc(100% - 1.5rem);
+  margin: 0 auto;
+  padding: 1.25rem 0 2.5rem;
+  max-width: 920px;
+}
+
+.decor {
+  position: fixed;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  filter: blur(18px);
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.decor--left {
+  left: -30px;
+  top: 12vh;
+  background: rgba(247, 141, 181, 0.65);
+}
+
+.decor--right {
+  right: -20px;
+  bottom: 12vh;
+  background: rgba(255, 197, 120, 0.5);
+}
+
+.hero,
+.question-card,
+.status-panel,
+.tips {
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  border-radius: 16px;
+  box-shadow: 0 16px 40px rgba(161, 77, 114, 0.12);
+}
+
+.hero {
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.hero__icon {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 0.4rem;
+}
+
+.hero__eyebrow {
+  margin: 0 0 0.4rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: #b04974;
+  font-weight: 700;
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  line-height: 1.05;
+}
+
+.hero__copy {
+  width: 100%;
+  margin: 0.75rem auto 0;
+  color: #6f3951;
+  font-size: 0.95rem;
+}
+
+.question-card {
+  padding: 1rem;
+}
+
+.question-card__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  color: #9c4b6c;
+  margin-bottom: 0.9rem;
+}
+
+.question-card__text {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.button {
+  border: none;
+  border-radius: 999px;
+  padding: 0.75rem 1rem;
+  min-width: 140px;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+  box-shadow: 0 12px 26px rgba(155, 58, 101, 0.12);
+}
+
+.button:hover:enabled {
+  transform: translateY(-2px);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  box-shadow: none;
+}
+
+.button--primary {
+  background: linear-gradient(135deg, #e95f94, #ff8f7d);
+  color: #fff;
+  font-weight: 700;
+}
+
+.button--ghost {
+  background: rgba(255, 255, 255, 0.95);
+  color: #8f3459;
+  font-weight: 700;
+}
+
+.status-panel,
+.tips {
+  padding: 1rem 1rem;
+}
+
+.status-panel {
+  display: grid;
+  gap: 0.5rem;
+  color: #6e344c;
+}
+
+.tips {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.tips__asset {
+  width: 100%;
+  max-width: 80px;
+  justify-self: center;
+}
+
+.tips h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+}
+
+.tips p {
+  margin: 0;
+  color: #6f3951;
+}
+
+/* Questions mode - app bar + centered card */
+.app-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.75rem;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.85);
+  box-shadow: 0 6px 18px rgba(161,77,114,0.08);
+}
+
+.question-area {
+  display: grid;
+  place-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+/* When in questions mode, reduce decor size and center the whole app on the card for focus */
+.mode-questions {
+  padding-top: 0.75rem;
+}
+
+.mode-questions .decor {
+  width: 120px;
+  height: 120px;
+  opacity: 0.35;
+}
+
+.hint {
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+  color: #5b3949;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.5rem 0.75rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(161, 77, 114, 0.06);
+  max-width: 420px;
+  text-align: center;
+}
+
+.hint__kbd {
+  display: inline;
+  font-weight: 700;
+}
+
+@media (max-width: 720px) {
+  /* hide keyboard hint on mobile */
+  .hint__kbd { display: none; }
+}
+
+/* Congrats card */
+.congrats-card {
+  padding: 2rem 1.5rem;
+  text-align: center;
+  background: linear-gradient(180deg, #e6ffef 0%, #e1fbe8 100%);
+  border: 1px solid rgba(34, 139, 82, 0.12);
+  color: #0b5d33;
+  border-radius: 16px;
+  box-shadow: 0 28px 60px rgba(14, 84, 45, 0.12);
+  position: relative;
+  z-index: 50; /* above confetti */
+}
+
+.congrats-card__asset {
+  width: 92px;
+  height: 92px;
+  margin: 0 auto 0.5rem;
+}
+
+.congrats-card h2 {
+  margin: 0.5rem 0 0.25rem;
+  font-size: 1.4rem;
+}
+
+.congrats-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+/* Confetti */
+.confetti {
+  position: fixed; /* cover viewport */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 40;
+}
+
+.confetti__piece {
+  position: absolute;
+  top: 0;
+  opacity: 0.95;
+  transform-origin: center;
+  animation-name: confetti-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: 1;
+}
+
+/* color variants */
+.confetti__piece--0 { background: #ff6b6b; }
+.confetti__piece--1 { background: #ffd166; }
+.confetti__piece--2 { background: #6bf0a3; }
+.confetti__piece--3 { background: #6ec1ff; }
+.confetti__piece--4 { background: #c38cff; }
+.confetti__piece--5 { background: #ff9ec0; }
+
+@keyframes confetti-fall {
+  0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(540deg); opacity: 0.9; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confetti__piece {
+    animation: none;
+    opacity: 0.8;
+  }
+}
+
+@media (min-width: 721px) {
+  .app-shell {
+    gap: 1.5rem;
+    width: min(920px, calc(100% - 2rem));
+    padding: 2rem 0 3rem;
+  }
+
+  .decor {
+    width: 180px;
+    height: 180px;
+  }
+
+  .hero,
+  .question-card,
+  .status-panel,
+  .tips {
+    border-radius: 28px;
+    box-shadow: 0 24px 70px rgba(161, 77, 114, 0.18);
+  }
+
+  .hero {
+    padding: 2rem;
+  }
+
+  .hero__icon {
+    width: 72px;
+    height: 72px;
+    margin-bottom: 0.6rem;
+  }
+
+  .hero__copy {
+    width: min(60ch, 100%);
+    margin: 1rem auto 0;
+    color: #6f3951;
+  }
+
+  .question-card {
+    padding: 1.5rem;
+  }
+
+  .question-card__text {
+    font-size: clamp(1.35rem, 3.2vw, 2.25rem);
+  }
+
+  .tips {
+    grid-template-columns: 110px 1fr;
+    text-align: left;
+  }
+}
+
+.question-card__content {
+  /* Ausgangszustand ohne Animation (sofern user prefers-reduced-motion nicht gesetzt) */
+  will-change: transform, opacity;
+}
+
+@keyframes slideUpFadeIn {
+  from {
+    transform: translateY(8px) scale(0.995);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .question-card__content {
+    animation: slideUpFadeIn 260ms cubic-bezier(.2,.9,.28,1) both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .question-card__content {
+    transition: none;
+    animation: none;
+  }
+}

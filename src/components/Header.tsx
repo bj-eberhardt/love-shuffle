@@ -1,0 +1,20 @@
+import React from 'react';
+
+export function Header({ title, status, onEnd }: { title?: string; status?: string; onEnd: () => void }) {
+  return (
+    <header className="app-bar" role="banner">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <img src="/assets/heart-badge.svg" alt="" style={{ width: 34, height: 34 }} />
+          <strong>{title ?? 'Love Shuffle'}</strong>
+        </div>
+        <small className="app-bar__status">{status}</small>
+      </div>
+      <div>
+        <button className="button button--ghost" type="button" onClick={onEnd}>
+          Beenden
+        </button>
+      </div>
+    </header>
+  );
+}

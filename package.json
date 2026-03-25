@@ -1,0 +1,26 @@
+{
+  "name": "love-shuffle-app",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "docker:build": "docker build -t beberhardt/love-shuffle-app:latest .",
+    "docker:publish": "docker push beberhardt/love-shuffle-app:latest",
+    "docker:build-and-push": "npm run docker:build && npm run docker:publish",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^5.0.4",
+    "typescript": "^5.8.3",
+    "jsdom": "^22.1.0"
+  }
+}

@@ -169,6 +169,17 @@ button {
   padding: 1rem 1rem;
 }
 
+.home-footer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 0.25rem;
+  color: #8f5a70;
+  font-size: 0.85rem;
+}
+
 .status-panel {
   display: grid;
   gap: 0.5rem;
@@ -369,6 +380,11 @@ button {
   .tips {
     grid-template-columns: 110px 1fr;
     text-align: left;
+  }
+
+  .home-footer {
+    padding: 0 0.5rem;
+    font-size: 0.9rem;
   }
 }
 

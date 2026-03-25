@@ -4,10 +4,12 @@ import { Hero } from './components/Hero';
 import { Header } from './components/Header';
 import { QuestionArea } from './components/QuestionArea';
 import { Confetti } from './components/Confetti';
+import { HomeFooter } from './components/HomeFooter';
 import { requestDocumentFullscreen } from './utils/fullscreen';
 
 export default function App() {
   const qm = useQuestionManager();
+  const version = __APP_VERSION__;
   const [mode, setMode] = useState<'intro' | 'questions'>('intro');
   const [statusMessage, setStatusMessage] = useState('Tippe auf „Shuffle“.');
   const [showHint, setShowHint] = useState(false);
@@ -122,6 +124,8 @@ export default function App() {
           </div>
         </aside>
       )}
+
+      {mode === 'intro' && <HomeFooter version={version} />}
     </main>
   );
 }

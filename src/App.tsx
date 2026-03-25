@@ -4,6 +4,7 @@ import { Hero } from './components/Hero';
 import { Header } from './components/Header';
 import { QuestionArea } from './components/QuestionArea';
 import { Confetti } from './components/Confetti';
+import { requestDocumentFullscreen } from './utils/fullscreen';
 
 export default function App() {
   const qm = useQuestionManager();
@@ -21,18 +22,7 @@ export default function App() {
       setMode('questions');
       setStatusMessage('Du hast alle Fragen durchgespielt. Gut gemacht!');
       setShowHint(false);
-      // Try to enter fullscreen on user gesture (may be blocked by some browsers)
-      try {
-        const docEl: any = document.documentElement;
-        if (docEl.requestFullscreen) {
-          await docEl.requestFullscreen();
-        } else if (docEl.webkitRequestFullscreen) {
-          // iOS Safari
-          docEl.webkitRequestFullscreen();
-        }
-      } catch (e) {
-        // ignore failures
-      }
+      await requestDocumentFullscreen();
       // no device motion
       return;
     }
@@ -41,17 +31,7 @@ export default function App() {
     qm.next();
     setMode('questions');
     setStatusMessage('Viel Spaß!');
-    // Attempt fullscreen on user gesture
-    try {
-      const docEl: any = document.documentElement;
-      if (docEl.requestFullscreen) {
-        await docEl.requestFullscreen();
-      } else if (docEl.webkitRequestFullscreen) {
-        docEl.webkitRequestFullscreen();
-      }
-    } catch (e) {
-      // ignore
-    }
+    await requestDocumentFullscreen();
     // show hint (desktop only controlled via CSS)
     setShowHint(true);
   }, [qm]);

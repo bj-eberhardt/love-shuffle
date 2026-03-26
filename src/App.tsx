@@ -32,15 +32,22 @@ export default function App() {
       return;
     }
 
+    if (qm.history.length > 0) {
+      setMode('questions');
+      setStatusMessage('Willkommen zurück!');
+      setShowHint(false);
+      await requestDocumentFullscreen();
+      return;
+    }
+
     await beginQuestionRound();
   }, [beginQuestionRound, qm]);
 
   const endRound = useCallback(() => {
     setMode('intro');
-    qm.resetHistory();
     setStatusMessage('Tippe auf „Shuffle“.');
     setShowHint(false);
-  }, [qm]);
+  }, []);
 
   const clearUsed = useCallback(() => {
     qm.resetAll();

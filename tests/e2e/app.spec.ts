@@ -61,15 +61,34 @@ test('starts a round, shuffles forward, and navigates back', async ({ page }) =>
   await expect(page.getByTestId('question-text')).toHaveText(firstQuestion ?? '');
 });
 
-test('persists played questions across reload and reset clears progress', async ({ page }) => {
+test('persists progress and resumes question history across reload', async ({ page }) => {
   await page.getByTestId('start-round-button').click();
+  const firstQuestion = await page.getByTestId('question-text').textContent();
+  await page.getByTestId('shuffle-button').click();
+  const secondQuestion = await page.getByTestId('question-text').textContent();
   await page.getByTestId('end-round-button').click();
 
-  await expect(page.getByTestId('hero-progress')).toContainText(`1 von ${QUESTION_COUNT}`);
+  await expect(page.getByTestId('hero-progress')).toContainText(`2 von ${QUESTION_COUNT}`);
 
   await page.reload();
 
-  await expect(page.getByTestId('hero-progress')).toContainText(`1 von ${QUESTION_COUNT}`);
+  await expect(page.getByTestId('hero-progress')).toContainText(`2 von ${QUESTION_COUNT}`);
+  await page.getByTestId('start-round-button').click();
+
+  await expect(page.getByTestId('question-position')).toHaveText(`2 / ${QUESTION_COUNT}`);
+  await expect(page.getByTestId('question-text')).toHaveText(secondQuestion ?? '');
+  await expect(page.getByTestId('back-button')).toBeEnabled();
+
+  await page.getByTestId('back-button').click();
+
+  await expect(page.getByTestId('question-position')).toHaveText(`1 / ${QUESTION_COUNT}`);
+  await expect(page.getByTestId('question-text')).toHaveText(firstQuestion ?? '');
+});
+
+test('reset clears persisted progress and history', async ({ page }) => {
+  await page.getByTestId('start-round-button').click();
+  await page.getByTestId('shuffle-button').click();
+  await page.getByTestId('end-round-button').click();
 
   await page.getByTestId('reset-used-button').click();
 

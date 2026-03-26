@@ -60,7 +60,7 @@ export default function App() {
   const disableShuffle = qm.remainingCount === 0;
 
   return (
-    <main className={`app-shell ${mode === 'questions' ? 'mode-questions' : ''}`}>
+    <main className={`app-shell ${mode === 'questions' ? 'mode-questions' : ''}`} data-testid="app-shell" data-mode={mode}>
       <div className="decor decor--left" aria-hidden="true" />
       <div className="decor decor--right" aria-hidden="true" />
 
@@ -72,15 +72,16 @@ export default function App() {
         <>
           <Header title="Love Shuffle" status={statusMessage} onEnd={endRound} />
           {allPlayed ? (
-            <div className="question-area" style={{ position: 'relative' }}>
-              <div className="congrats-card">
+            <div className="question-area" style={{ position: 'relative' }} data-testid="all-played-view">
+              <div className="congrats-card" data-testid="congrats-card">
                 <img src="/assets/heart-badge.svg" className="congrats-card__asset" alt="Erfolg" />
                 <h2>Glückwunsch!</h2>
                 <p>Du hast alle Fragen durchgespielt.</p>
-                <div className="congrats-actions">
+                <div className="congrats-actions" data-testid="congrats-actions">
                   <button
                     className="button button--primary"
                     type="button"
+                    data-testid="play-again-button"
                     onClick={() => {
                       // reset all persisted answers and immediately start a new round
                       qm.resetAll();
@@ -90,7 +91,7 @@ export default function App() {
                   >
                     Nochmal spielen
                   </button>
-                  <button className="button button--ghost" type="button" onClick={() => endRound()}>
+                  <button className="button button--ghost" type="button" onClick={() => endRound()} data-testid="congrats-back-button">
                     Zurück
                   </button>
                 </div>
@@ -113,7 +114,7 @@ export default function App() {
       )}
 
       {mode === 'intro' && (
-        <aside className="tips">
+        <aside className="tips" data-testid="intro-tips">
           <img className="tips__asset" src="/assets/rose-wave.svg" alt="Romantische Illustration" />
           <div>
             <h2>Kleine Idee für eure Runde</h2>

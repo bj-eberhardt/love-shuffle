@@ -31,8 +31,11 @@ jobs:
         run: |
           echo "value=$(tr -d '\r\n[:space:]' < .nvmrc)" >> "$GITHUB_OUTPUT"
 
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
       - name: Run tests
-        run: npm run test:e2e:headed
+        run: npm run test:e2e
 
       - name: Build project
         run: npm run build

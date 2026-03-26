@@ -98,12 +98,9 @@ export default function App() {
                     className="button button--primary"
                     type="button"
                     data-testid="play-again-button"
-                    onClick={() => { restartRound(); }}
+                    onClick={restartRound}
                   >
                     Nochmal spielen
-                  </button>
-                  <button className="button button--ghost" type="button" onClick={() => endRound()} data-testid="congrats-back-button">
-                    Zurück
                   </button>
                 </div>
               </div>

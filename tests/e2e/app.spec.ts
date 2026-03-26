@@ -44,7 +44,8 @@ test('starts a round, shuffles forward, and navigates back', async ({ page }) =>
   await expect(page.getByTestId('home-footer')).toHaveCount(0);
   await expect(page.getByTestId('question-card')).toBeVisible();
   await expect(page.getByTestId('question-position')).toHaveText(`1 / ${QUESTION_COUNT}`);
-  await expect(page.getByTestId('back-button')).toBeDisabled();
+  await expect(page.getByTestId('back-button')).toHaveCount(0);
+  await expect(page.getByTestId('forward-button')).toHaveCount(0);
 
   const firstQuestion = await page.getByTestId('question-text').textContent();
 
@@ -52,13 +53,22 @@ test('starts a round, shuffles forward, and navigates back', async ({ page }) =>
 
   await expect(page.getByTestId('question-position')).toHaveText(`2 / ${QUESTION_COUNT}`);
   await expect(page.getByTestId('back-button')).toBeEnabled();
+  await expect(page.getByTestId('forward-button')).toHaveCount(0);
   await expect(page.getByTestId('status-message')).toContainText('Shuffle');
   await expect(page.getByTestId('question-text')).not.toHaveText(firstQuestion ?? '');
+
+  const secondQuestion = await page.getByTestId('question-text').textContent();
 
   await page.getByTestId('back-button').click();
 
   await expect(page.getByTestId('question-position')).toHaveText(`1 / ${QUESTION_COUNT}`);
   await expect(page.getByTestId('question-text')).toHaveText(firstQuestion ?? '');
+  await expect(page.getByTestId('forward-button')).toBeEnabled();
+
+  await page.getByTestId('forward-button').click();
+
+  await expect(page.getByTestId('question-position')).toHaveText(`2 / ${QUESTION_COUNT}`);
+  await expect(page.getByTestId('question-text')).toHaveText(secondQuestion ?? '');
 });
 
 test('persists progress and resumes question history across reload', async ({ page }) => {
@@ -83,6 +93,16 @@ test('persists progress and resumes question history across reload', async ({ pa
 
   await expect(page.getByTestId('question-position')).toHaveText(`1 / ${QUESTION_COUNT}`);
   await expect(page.getByTestId('question-text')).toHaveText(firstQuestion ?? '');
+  await expect(page.getByTestId('forward-button')).toBeEnabled();
+
+  await page.getByTestId('end-round-button').click();
+  await page.reload();
+  await page.getByTestId('start-round-button').click();
+
+  await expect(page.getByTestId('question-position')).toHaveText(`2 / ${QUESTION_COUNT}`);
+  await expect(page.getByTestId('question-text')).toHaveText(secondQuestion ?? '');
+  await expect(page.getByTestId('forward-button')).toHaveCount(0);
+  await expect(page.getByTestId('back-button')).toBeEnabled();
 });
 
 test('reset clears persisted progress and history', async ({ page }) => {

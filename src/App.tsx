@@ -33,6 +33,7 @@ export default function App() {
     }
 
     if (qm.history.length > 0) {
+      qm.jumpToLatest();
       setMode('questions');
       setStatusMessage('Willkommen zurück!');
       setShowHint(false);
@@ -55,10 +56,10 @@ export default function App() {
     setShowHint(false);
   }, [qm]);
 
-  const restartRound = useCallback(async () => {
+  const restartRound = useCallback(() => {
     qm.resetAll();
     setRestartPending(true);
-  }, [beginQuestionRound, qm]);
+  }, [qm]);
 
   useEffect(() => {
     if (!restartPending || qm.remainingCount === 0) return;
@@ -70,7 +71,8 @@ export default function App() {
   const hint = useMemo(() => (showHint ? 'Tipp: Klicke "Shuffle", um zur nächsten Frage zu kommen.' : ''), [showHint]);
 
   const allPlayed = qm.usedCount >= qm.questions.length || qm.remainingCount === 0;
-  const canGoBack = qm.history.length > 1;
+  const canGoBack = qm.historyPointer > 0;
+  const canGoForward = qm.historyPointer >= 0 && qm.historyPointer < qm.history.length - 1;
   const disableShuffle = qm.remainingCount === 0;
 
   return (
@@ -96,7 +98,7 @@ export default function App() {
                     className="button button--primary"
                     type="button"
                     data-testid="play-again-button"
-                    onClick={() => { void restartRound(); }}
+                    onClick={() => { restartRound(); }}
                   >
                     Nochmal spielen
                   </button>
@@ -113,10 +115,12 @@ export default function App() {
               index={qm.currentIndex}
               total={qm.questions.length}
               onShuffle={() => { qm.next(); setStatusMessage('Neue Frage per Shuffle ausgewählt.'); setShowHint(false); }}
-              onBack={() => { qm.prev(); setStatusMessage('Zur vorherigen Frage zurückgekehrt.'); }}
+              onBack={() => { qm.prev(); setStatusMessage('Zur vorherigen Frage zurückgekehrt.'); setShowHint(false); }}
+              onForward={() => { qm.forward(); setStatusMessage('Zur neueren Frage weitergegangen.'); setShowHint(false); }}
               hint={hint}
               disableShuffle={disableShuffle}
-              disableBack={!canGoBack}
+              showBack={canGoBack}
+              showForward={canGoForward}
             />
           )}
         </>

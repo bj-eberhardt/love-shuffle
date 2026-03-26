@@ -8,17 +8,28 @@ export type QuestionAreaProps = {
   total: number;
   onShuffle: () => void;
   onBack: () => void;
+  onForward: () => void;
   hint?: string;
   disableShuffle?: boolean;
-  disableBack?: boolean;
+  showBack?: boolean;
+  showForward?: boolean;
 };
 
-export function QuestionArea({ question, index, total, onShuffle, onBack, hint, disableShuffle, disableBack }: QuestionAreaProps) {
+export function QuestionArea({
+  question,
+  index,
+  total,
+  onShuffle,
+  onBack,
+  onForward,
+  hint,
+  disableShuffle,
+  showBack,
+  showForward,
+}: QuestionAreaProps) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      // Space or Enter to shuffle
       if (e.code === 'Space' || e.code === 'Enter') {
-        // prevent page scroll
         e.preventDefault();
         if (!disableShuffle) onShuffle();
       }
@@ -26,7 +37,7 @@ export function QuestionArea({ question, index, total, onShuffle, onBack, hint, 
 
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [onShuffle]);
+  }, [disableShuffle, onShuffle]);
 
   return (
     <div className="question-area" data-testid="question-area">
@@ -38,7 +49,14 @@ export function QuestionArea({ question, index, total, onShuffle, onBack, hint, 
         </div>
       )}
 
-      <Controls onShuffle={onShuffle} onBack={onBack} disableShuffle={disableShuffle} disableBack={disableBack} />
+      <Controls
+        onShuffle={onShuffle}
+        onBack={onBack}
+        onForward={onForward}
+        disableShuffle={disableShuffle}
+        showBack={showBack}
+        showForward={showForward}
+      />
 
       {hint && <div className="hint">{hint} <span className="hint__kbd">(Tastenkürzel: Leertaste)</span></div>}
     </div>

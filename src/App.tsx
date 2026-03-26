@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import useQuestionManager from './hooks/useQuestionManager';
 import { Hero } from './components/Hero';
 import { Header } from './components/Header';
@@ -13,45 +13,52 @@ export default function App() {
   const [mode, setMode] = useState<'intro' | 'questions'>('intro');
   const [statusMessage, setStatusMessage] = useState('Tippe auf „Shuffle“.');
   const [showHint, setShowHint] = useState(false);
+  const [restartPending, setRestartPending] = useState(false);
 
-  // Shake detection removed: navigation now only via button or Space key
-
-  // Start the round: pick initial question and show question mode
-  const startRound = useCallback(async () => {
-    if (qm.remainingCount === 0) {
-      // If all questions were already played, still switch to questions mode
-      // so the congrats view is shown and the user receives feedback.
-      setMode('questions');
-      setStatusMessage('Du hast alle Fragen durchgespielt. Gut gemacht!');
-      setShowHint(false);
-      await requestDocumentFullscreen();
-      // no device motion
-      return;
-    }
-
-    // choose first question
+  const beginQuestionRound = useCallback(async () => {
     qm.next();
     setMode('questions');
     setStatusMessage('Viel Spaß!');
     await requestDocumentFullscreen();
-    // show hint (desktop only controlled via CSS)
     setShowHint(true);
   }, [qm]);
 
+  const startRound = useCallback(async () => {
+    if (qm.remainingCount === 0) {
+      setMode('questions');
+      setStatusMessage('Du hast alle Fragen durchgespielt. Gut gemacht!');
+      setShowHint(false);
+      await requestDocumentFullscreen();
+      return;
+    }
+
+    await beginQuestionRound();
+  }, [beginQuestionRound, qm]);
+
   const endRound = useCallback(() => {
     setMode('intro');
-    // Only clear the in-memory history; keep persisted used questions
     qm.resetHistory();
     setStatusMessage('Tippe auf „Shuffle“.');
     setShowHint(false);
   }, [qm]);
 
   const clearUsed = useCallback(() => {
-    // Clear persisted used questions and history
     qm.resetAll();
     setStatusMessage('Fragen wurden zurückgesetzt. Du kannst jetzt neu starten.');
     setShowHint(false);
   }, [qm]);
+
+  const restartRound = useCallback(async () => {
+    qm.resetAll();
+    setRestartPending(true);
+  }, [beginQuestionRound, qm]);
+
+  useEffect(() => {
+    if (!restartPending || qm.remainingCount === 0) return;
+
+    setRestartPending(false);
+    void beginQuestionRound();
+  }, [beginQuestionRound, qm.remainingCount, restartPending]);
 
   const hint = useMemo(() => (showHint ? 'Tipp: Klicke "Shuffle", um zur nächsten Frage zu kommen.' : ''), [showHint]);
 
@@ -60,7 +67,7 @@ export default function App() {
   const disableShuffle = qm.remainingCount === 0;
 
   return (
-    <main className={`app-shell ${mode === 'questions' ? 'mode-questions' : ''}`}>
+    <main className={`app-shell ${mode === 'questions' ? 'mode-questions' : ''}`} data-testid="app-shell" data-mode={mode}>
       <div className="decor decor--left" aria-hidden="true" />
       <div className="decor decor--right" aria-hidden="true" />
 
@@ -72,25 +79,21 @@ export default function App() {
         <>
           <Header title="Love Shuffle" status={statusMessage} onEnd={endRound} />
           {allPlayed ? (
-            <div className="question-area" style={{ position: 'relative' }}>
-              <div className="congrats-card">
+            <div className="question-area" style={{ position: 'relative' }} data-testid="all-played-view">
+              <div className="congrats-card" data-testid="congrats-card">
                 <img src="/assets/heart-badge.svg" className="congrats-card__asset" alt="Erfolg" />
                 <h2>Glückwunsch!</h2>
-                <p>Du hast alle Fragen durchgespielt.</p>
-                <div className="congrats-actions">
+                <p data-testid="congrats-message">Du hast alle Fragen durchgespielt.</p>
+                <div className="congrats-actions" data-testid="congrats-actions">
                   <button
                     className="button button--primary"
                     type="button"
-                    onClick={() => {
-                      // reset all persisted answers and immediately start a new round
-                      qm.resetAll();
-                      // startRound will pull the first question and switch mode
-                      void startRound();
-                    }}
+                    data-testid="play-again-button"
+                    onClick={() => { void restartRound(); }}
                   >
                     Nochmal spielen
                   </button>
-                  <button className="button button--ghost" type="button" onClick={() => endRound()}>
+                  <button className="button button--ghost" type="button" onClick={() => endRound()} data-testid="congrats-back-button">
                     Zurück
                   </button>
                 </div>
@@ -113,7 +116,7 @@ export default function App() {
       )}
 
       {mode === 'intro' && (
-        <aside className="tips">
+        <aside className="tips" data-testid="intro-tips">
           <img className="tips__asset" src="/assets/rose-wave.svg" alt="Romantische Illustration" />
           <div>
             <h2>Kleine Idee für eure Runde</h2>

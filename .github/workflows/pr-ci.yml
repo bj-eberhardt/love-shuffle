@@ -1,0 +1,56 @@
+name: PR CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: pr-ci-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  test_build:
+    name: Test and Build
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    outputs:
+      node_version: ${{ steps.node_version.outputs.value }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup project
+        uses: ./.github/actions/setup-node-project
+
+      - name: Read Node version
+        id: node_version
+        run: |
+          echo "value=$(tr -d '\r\n[:space:]' < .nvmrc)" >> "$GITHUB_OUTPUT"
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run tests
+        run: npm run test:e2e
+
+      - name: Build project
+        run: npm run build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: dist-node-${{ steps.node_version.outputs.value }}
+          path: dist
+          if-no-files-found: error
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: playwright-report-node-${{ steps.node_version.outputs.value }}
+          path: playwright-report
+          if-no-files-found: warn

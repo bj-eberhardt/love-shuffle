@@ -29,7 +29,7 @@ export function QuestionArea({ question, index, total, onShuffle, onBack, hint, 
   }, [onShuffle]);
 
   return (
-    <div className="question-area">
+    <div className="question-area" data-testid="question-area">
       {index !== undefined ? (
         <QuestionCard question={question ?? ''} index={index} total={total} />
       ) : (

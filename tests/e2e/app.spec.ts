@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-const QUESTION_COUNT = 86;
+const QUESTION_COUNT = 93;
 
 async function bootstrapApp(page: Page) {
   await page.addInitScript(() => {

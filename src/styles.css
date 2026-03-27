@@ -112,12 +112,14 @@ button {
   gap: 12px;
   justify-content: center;
   align-items: flex-start;
+  flex-wrap: wrap;
 }
 
 .split-button {
   position: relative;
   display: inline-block;
   isolation: isolate;
+  max-width: 100%;
 }
 
 .split-button__surface {
@@ -145,6 +147,7 @@ button {
   padding: 0.9rem 1.25rem 0.9rem 1.4rem;
   font-weight: 700;
   text-align: center;
+  min-inline-size: 0;
 }
 
 .split-button__toggle {
@@ -601,6 +604,49 @@ button {
 @media (max-width: 720px) {
   /* hide keyboard hint on mobile */
   .hint__kbd { display: none; }
+}
+
+@media (max-width: 500px) {
+  .app-shell {
+    width: calc(100% - 1rem);
+    padding-top: 0.85rem;
+  }
+
+  .hero {
+    padding: 1rem 0.9rem;
+  }
+
+  .hero h1 {
+    font-size: 1.35rem;
+  }
+
+  .hero__copy {
+    font-size: 0.92rem;
+  }
+
+  .hero__split-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .split-button {
+    width: 100%;
+  }
+
+  .split-button__surface {
+    width: 100%;
+  }
+
+  .split-button__main {
+    min-width: 0;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .button[data-testid='reset-used-button'] {
+    width: 100%;
+    min-width: 0;
+  }
 }
 
 /* Congrats card */

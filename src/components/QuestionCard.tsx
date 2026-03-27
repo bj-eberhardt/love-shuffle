@@ -1,4 +1,5 @@
-import type { Question, QuestionCategory } from '../types/questions';
+import type { Question } from '../types/questions';
+import { QUESTION_CATEGORY_META } from '../utils/questionCategories';
 
 type QuestionCardProps = {
   question: Question;
@@ -6,39 +7,11 @@ type QuestionCardProps = {
   total: number;
 };
 
-const categoryMeta: Record<QuestionCategory, { label: string; iconSrc: string; className: string }> = {
-  'sex-intimitaet': {
-    label: 'Sex & Intimität',
-    iconSrc: '/assets/category-sex-intimitaet.svg',
-    className: 'question-card--sex-intimitaet',
-  },
-  'verbundenheit-wachstum': {
-    label: 'Verbundenheit & Wachstum',
-    iconSrc: '/assets/category-verbundenheit-wachstum.svg',
-    className: 'question-card--verbundenheit-wachstum',
-  },
-  erinnerungen: {
-    label: 'Erinnerungen',
-    iconSrc: '/assets/category-erinnerungen.svg',
-    className: 'question-card--erinnerungen',
-  },
-  beziehung: {
-    label: 'Beziehung',
-    iconSrc: '/assets/category-beziehung.svg',
-    className: 'question-card--beziehung',
-  },
-  'ueber-dich': {
-    label: 'Über dich',
-    iconSrc: '/assets/category-ueber-dich.svg',
-    className: 'question-card--ueber-dich',
-  },
-};
-
 export function QuestionCard({ question, index, total }: QuestionCardProps) {
-  const meta = categoryMeta[question.category];
+  const meta = QUESTION_CATEGORY_META[question.category];
 
   return (
-    <section className={`question-card ${meta.className}`} aria-live="polite" data-testid="question-card">
+    <section className={`question-card ${meta.accentClassName}`} aria-live="polite" data-testid="question-card">
       <div className="question-card__meta" data-testid="question-meta">
         <span className="question-card__category" data-testid="question-category">
           <img className="question-card__category-icon" src={meta.iconSrc} alt="" aria-hidden="true" />

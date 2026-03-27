@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import { QuestionCard } from './QuestionCard';
 import { Controls } from './Controls';
+import type { Question } from '../types/questions';
 
 export type QuestionAreaProps = {
-  question?: string;
+  question?: Question;
   index?: number;
   total: number;
   onShuffle: () => void;
@@ -42,7 +43,7 @@ export function QuestionArea({
   return (
     <div className="question-area" data-testid="question-area">
       {index !== undefined ? (
-        <QuestionCard key={index} question={question ?? ''} index={index} total={total} />
+        question ? <QuestionCard key={index} question={question} index={index} total={total} /> : null
       ) : (
         <div className="question-card" style={{ textAlign: 'center' }}>
           <p className="question-card__text">Noch keine Frage gewählt.</p>

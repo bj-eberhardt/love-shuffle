@@ -113,10 +113,89 @@ button {
 .question-card__meta {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 0.75rem;
-  font-size: 0.95rem;
-  color: #9c4b6c;
+  font-size: 0.82rem;
+  color: #8e6275;
   margin-bottom: 0.9rem;
+}
+
+.question-card__category {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  padding: 0.16rem 0.36rem 0.16rem 0.16rem;
+  border-radius: 999px;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background: rgba(255, 255, 255, 0.52);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+}
+
+.question-card__category-icon {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: 0 0 1.15rem;
+}
+
+.question-card__category-label {
+  line-height: 1;
+}
+
+.question-card--sex-intimitaet {
+  border-color: rgba(173, 66, 118, 0.18);
+  box-shadow: 0 18px 42px rgba(160, 53, 109, 0.14);
+}
+
+.question-card--sex-intimitaet .question-card__category,
+.question-card--sex-intimitaet .question-card__category {
+  color: #8f1f56;
+  background: rgba(248, 203, 223, 0.44);
+}
+
+.question-card--verbundenheit-wachstum {
+  border-color: rgba(101, 148, 118, 0.2);
+  box-shadow: 0 18px 42px rgba(73, 130, 95, 0.14);
+}
+
+.question-card--verbundenheit-wachstum .question-card__category,
+.question-card--verbundenheit-wachstum .question-card__category {
+  color: #2f7b54;
+  background: rgba(213, 244, 223, 0.48);
+}
+
+.question-card--erinnerungen {
+  border-color: rgba(113, 126, 189, 0.2);
+  box-shadow: 0 18px 42px rgba(96, 112, 181, 0.14);
+}
+
+.question-card--erinnerungen .question-card__category,
+.question-card--erinnerungen .question-card__category {
+  color: #4f5db1;
+  background: rgba(222, 228, 255, 0.5);
+}
+
+.question-card--beziehung {
+  border-color: rgba(215, 143, 73, 0.2);
+  box-shadow: 0 18px 42px rgba(208, 138, 56, 0.13);
+}
+
+.question-card--beziehung .question-card__category,
+.question-card--beziehung .question-card__category {
+  color: #a85d17;
+  background: rgba(255, 231, 202, 0.54);
+}
+
+.question-card--ueber-dich {
+  border-color: rgba(109, 134, 151, 0.2);
+  box-shadow: 0 18px 42px rgba(92, 117, 136, 0.12);
+}
+
+.question-card--ueber-dich .question-card__category,
+.question-card--ueber-dich .question-card__category {
+  color: #4c677c;
+  background: rgba(223, 236, 244, 0.56);
 }
 
 .question-card__text {

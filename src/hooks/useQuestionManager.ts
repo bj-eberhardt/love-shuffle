@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import questions from '../data/questions.json';
 import useLocalStorageSet from './useLocalStorageSet';
 import { safeGetItem, safeRemoveItem, safeSetItem } from '../utils/storage';
+import type { Question } from '../types/questions';
 
 function getRandomFromArray<T>(arr: T[]) {
   return arr[Math.floor(Math.random() * arr.length)];
@@ -82,7 +83,7 @@ export default function useQuestionManager() {
   return {
     questions,
     currentIndex,
-    currentQuestion: typeof currentIndex === 'number' ? questions[currentIndex] : undefined,
+    currentQuestion: typeof currentIndex === 'number' ? (questions[currentIndex] as Question) : undefined,
     history,
     historyPointer: normalizedPointer,
     next,

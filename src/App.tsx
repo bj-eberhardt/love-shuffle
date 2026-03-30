@@ -1,37 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { CategoryFilterModal } from './components/CategoryFilterModal';
-import { Confetti } from './components/Confetti';
-import { Header } from './components/Header';
-import { Hero } from './components/Hero';
-import { HomeFooter } from './components/HomeFooter';
-import { QuestionArea } from './components/QuestionArea';
-import { SkipQuestionModal } from './components/SkipQuestionModal';
+import { IntroScreen } from './components/IntroScreen';
+import { QuestionScreen } from './components/QuestionScreen';
 import useQuestionManager from './hooks/useQuestionManager';
 import type { QuestionCategory } from './types/questions';
 import { requestDocumentFullscreen } from './utils/fullscreen';
-import { getCategorySummary, QUESTION_CATEGORY_META, QUESTION_CATEGORY_ORDER } from './utils/questionCategories';
+import { getCategorySummary, QUESTION_CATEGORY_ORDER } from './utils/questionCategories';
 
 function haveSameCategories(a: QuestionCategory[], b: QuestionCategory[]) {
   return a.length === b.length && a.every((category, index) => category === b[index]);
-}
-
-function renderHighlightedCategoryLabels(categories: QuestionCategory[]) {
-  const labels = categories.map((category) => QUESTION_CATEGORY_META[category].label);
-
-  return labels.map((label, index) => {
-    const prefix = index === 0
-      ? ''
-      : index === labels.length - 1
-        ? ' und '
-        : ', ';
-
-    return (
-      <span key={label}>
-        {prefix}
-        <span className="congrats-card__categories">{label}</span>
-      </span>
-    );
-  });
 }
 
 export default function App() {
@@ -232,160 +208,79 @@ export default function App() {
       <div className="decor decor--right" aria-hidden="true" />
 
       {mode === 'intro' && (
-        <>
-          <Hero
-            usedCount={qm.usedCountInSelection}
-            total={qm.filteredTotalCount}
-            onStart={startAllRound}
-            onReset={clearUsed}
-            onOpenFilters={openFilters}
-            activeFilterSummary={activeFilterSummary}
-          />
-          <CategoryFilterModal
-            isOpen={isFilterModalOpen}
-            selectedCategories={modalCategories}
-            onToggleCategory={toggleCategory}
-            onSelectAll={selectAllCategories}
-            onConfirm={startFilteredRound}
-            onClose={() => setIsFilterModalOpen(false)}
-          />
-          <SkipQuestionModal
-            isOpen={isSkipModalOpen}
-            onSkipForSession={() => completeSkip('session')}
-            onSkipPermanently={() => completeSkip('permanent')}
-            onClose={() => setIsSkipModalOpen(false)}
-          />
-        </>
+        <IntroScreen
+          usedCount={qm.usedCountInSelection}
+          total={qm.filteredTotalCount}
+          version={version}
+          activeFilterSummary={activeFilterSummary}
+          isFilterModalOpen={isFilterModalOpen}
+          modalCategories={modalCategories}
+          onStart={startAllRound}
+          onReset={clearUsed}
+          onOpenFilters={openFilters}
+          onToggleCategory={toggleCategory}
+          onSelectAllCategories={selectAllCategories}
+          onStartFilteredRound={startFilteredRound}
+          onCloseFilterModal={() => setIsFilterModalOpen(false)}
+        />
       )}
 
       {mode === 'questions' && (
-        <>
-          <Header title="Love Shuffle" status={statusMessage} filterSummary={activeFilterSummary} onEnd={endRound} />
-          {shouldShowCongrats && !qm.currentQuestion ? (
-            <div className="question-area" style={{ position: 'relative' }} data-testid="all-played-view">
-              <div className="congrats-card" data-testid="congrats-card">
-                <img src="/assets/heart-badge.svg" className="congrats-card__asset" alt="Erfolg" />
-                <h2>Glückwunsch!</h2>
-                <p data-testid="congrats-message">
-                  {allQuestionsPlayed ? (
-                    'Du hast das komplette Spiel durchgespielt.'
-                  ) : (
-                    <>
-                      Du hast <span data-testid="congrats-categories">{renderHighlightedCategoryLabels(activeCategories)}</span> durchgespielt.
-                    </>
-                  )}
-                </p>
-                <div className="congrats-actions" data-testid="congrats-actions">
-                  <button
-                    className="button button--primary"
-                    type="button"
-                    data-testid="play-again-button"
-                    onClick={restartRound}
-                  >
-                    {playAgainLabel}
-                  </button>
-                </div>
-              </div>
-              <Confetti />
-            </div>
-          ) : (
-            <div className="question-area" style={{ position: 'relative' }} data-testid={shouldShowCongrats ? 'all-played-view' : 'question-flow-view'}>
-              <QuestionArea
-                question={qm.currentQuestion}
-                index={qm.historyPointerInSelection >= 0 ? qm.historyPointerInSelection : undefined}
-                total={qm.filteredTotalCount}
-                onShuffle={() => {
-                  if (qm.remainingCount === 0) {
-                    setShowCongrats(true);
-                    setIsSkipModalOpen(false);
-                    setStatusMessage('Du hast alle Fragen durchgespielt. Gut gemacht!');
-                    setShowHint(false);
-                    return;
-                  }
+        <QuestionScreen
+          statusMessage={statusMessage}
+          activeFilterSummary={activeFilterSummary}
+          onEnd={endRound}
+          shouldShowCongrats={shouldShowCongrats}
+          allQuestionsPlayed={allQuestionsPlayed}
+          activeCategories={activeCategories}
+          playAgainLabel={playAgainLabel}
+          onPlayAgain={restartRound}
+          question={qm.currentQuestion}
+          index={qm.historyPointerInSelection >= 0 ? qm.historyPointerInSelection : undefined}
+          total={qm.filteredTotalCount}
+          onShuffle={() => {
+            if (qm.remainingCount === 0) {
+              setShowCongrats(true);
+              setIsSkipModalOpen(false);
+              setStatusMessage('Du hast alle Fragen durchgespielt. Gut gemacht!');
+              setShowHint(false);
+              return;
+            }
 
-                  qm.next();
-                  setShowCongrats(false);
-                  setIsSkipModalOpen(false);
-                  setStatusMessage(qm.remainingCount === 1 ? 'Letzte Frage erreicht.' : 'Neue Frage per Shuffle ausgewählt.');
-                  setShowHint(false);
-                }}
-                onBack={() => {
-                  qm.prev();
-                  setShowCongrats(false);
-                  setIsSkipModalOpen(false);
-                  setStatusMessage('Zur vorherigen Frage zurückgekehrt.');
-                  setShowHint(false);
-                }}
-                onSkip={() => {
-                  setIsSkipModalOpen(true);
-                }}
-                onForward={() => {
-                  qm.forward();
-                  setShowCongrats(false);
-                  setIsSkipModalOpen(false);
-                  setStatusMessage('Zur neueren Frage weitergegangen.');
-                  setShowHint(false);
-                }}
-                hint={hint}
-                disableShuffle={disableShuffle}
-                showSkip={showSkip}
-                showBack={canGoBack}
-                showForward={canGoForward}
-              />
-
-              {shouldShowCongrats && (
-                <>
-                  <div className="congrats-card" data-testid="congrats-card">
-                    <img src="/assets/heart-badge.svg" className="congrats-card__asset" alt="Erfolg" />
-                    <h2>Glückwunsch!</h2>
-                    <p data-testid="congrats-message">
-                      {allQuestionsPlayed ? (
-                        'Du hast das komplette Spiel durchgespielt.'
-                      ) : (
-                        <>
-                          Du hast <span data-testid="congrats-categories">{renderHighlightedCategoryLabels(activeCategories)}</span> durchgespielt.
-                        </>
-                      )}
-                    </p>
-                    <div className="congrats-actions" data-testid="congrats-actions">
-                      <button
-                        className="button button--primary"
-                        type="button"
-                        data-testid="play-again-button"
-                        onClick={restartRound}
-                      >
-                        {playAgainLabel}
-                      </button>
-                    </div>
-                  </div>
-                  <Confetti />
-                </>
-              )}
-            </div>
-          )}
-          <SkipQuestionModal
-            isOpen={isSkipModalOpen}
-            onSkipForSession={() => completeSkip('session')}
-            onSkipPermanently={() => completeSkip('permanent')}
-            onClose={() => setIsSkipModalOpen(false)}
-          />
-        </>
+            qm.next();
+            setShowCongrats(false);
+            setIsSkipModalOpen(false);
+            setStatusMessage(qm.remainingCount === 1 ? 'Letzte Frage erreicht.' : 'Neue Frage per Shuffle ausgewählt.');
+            setShowHint(false);
+          }}
+          onBack={() => {
+            qm.prev();
+            setShowCongrats(false);
+            setIsSkipModalOpen(false);
+            setStatusMessage('Zur vorherigen Frage zurückgekehrt.');
+            setShowHint(false);
+          }}
+          onSkip={() => {
+            setIsSkipModalOpen(true);
+          }}
+          onForward={() => {
+            qm.forward();
+            setShowCongrats(false);
+            setIsSkipModalOpen(false);
+            setStatusMessage('Zur neueren Frage weitergegangen.');
+            setShowHint(false);
+          }}
+          hint={hint}
+          disableShuffle={disableShuffle}
+          showSkip={showSkip}
+          showBack={canGoBack}
+          showForward={canGoForward}
+          isSkipModalOpen={isSkipModalOpen}
+          onSkipForSession={() => completeSkip('session')}
+          onSkipPermanently={() => completeSkip('permanent')}
+          onCloseSkipModal={() => setIsSkipModalOpen(false)}
+        />
       )}
-
-      {mode === 'intro' && (
-        <aside className="tips" data-testid="intro-tips">
-          <img className="tips__asset" src="/assets/rose-wave.svg" alt="Romantische Illustration" />
-          <div>
-            <h2>Kleine Idee für eure Runde</h2>
-            <p>
-              Lest die Frage laut vor, nehmt euch kurz Zeit und beantwortet sie nacheinander.
-              So entsteht aus jeder Karte ein ruhiger, persönlicher Moment.
-            </p>
-          </div>
-        </aside>
-      )}
-
-      {mode === 'intro' && <HomeFooter version={version} />}
     </main>
   );
 }

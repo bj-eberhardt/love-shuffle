@@ -418,6 +418,16 @@ button {
   margin-top: 1rem;
 }
 
+.modal-card__actions--stack {
+  justify-content: stretch;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.modal-card__actions--stack .button {
+  flex: 1 1 240px;
+}
+
 .modal-card__validation {
   margin: 1rem 0 0;
   color: #9b315b;
@@ -645,6 +655,22 @@ button {
 
   .button[data-testid='reset-used-button'] {
     width: 100%;
+    min-width: 0;
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .actions__button--shuffle,
+  .actions__button--skip {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .actions__button--back,
+  .actions__button--forward {
+    flex: 1 1 calc(50% - 0.375rem);
     min-width: 0;
   }
 }

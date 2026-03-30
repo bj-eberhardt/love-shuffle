@@ -36,6 +36,7 @@ async function readGameStorage(page: Page) {
   return page.evaluate(() => ({
     used: window.localStorage.getItem('loveShuffle.usedQuestions.v1'),
     history: window.localStorage.getItem('loveShuffle.history.v1'),
+    blocked: window.localStorage.getItem('loveShuffle.blockedQuestions.v1'),
     pointer: window.localStorage.getItem('loveShuffle.historyPointer.v1'),
   }));
 }
@@ -118,6 +119,148 @@ test('starting a filtered round uses only the selected category', async ({ page 
   await expect(page.getByTestId('filter-summary')).toHaveText('Beziehung');
   await expect(page.getByTestId('question-position')).toHaveText(`1 / ${relationshipCount}`);
   await expect(page.getByTestId('question-category')).toContainText('Beziehung');
+});
+
+test('skipping a question removes it from the current session without counting it as played', async ({ page }) => {
+  await page.getByTestId('start-round-button').click();
+
+  const skippedQuestion = await page.getByTestId('question-text').textContent();
+
+  await page.getByTestId('skip-button').click();
+  await expect(page.getByTestId('skip-question-modal')).toBeVisible();
+  await page.getByTestId('skip-session-button').click();
+
+  await expect(page.getByTestId('question-position')).toHaveText(`1 / ${QUESTION_COUNT - 1}`);
+  await expect(page.getByTestId('question-text')).not.toHaveText(skippedQuestion ?? '');
+  await expect(page.getByTestId('hero-progress')).toHaveCount(0);
+
+  const storageAfterSkip = await readGameStorage(page);
+  await expect(JSON.parse(storageAfterSkip.used ?? '[]')).toHaveLength(1);
+  await expect(JSON.parse(storageAfterSkip.history ?? '[]')).toHaveLength(1);
+  await expect(storageAfterSkip.blocked).toBeNull();
+});
+
+test('skipping the last remaining question falls back to the previous card and hides skip', async ({ page }) => {
+  await page.getByTestId('start-round-button').click();
+
+  for (let i = 1; i < QUESTION_COUNT; i += 1) {
+    await page.getByTestId('shuffle-button').click();
+  }
+
+  const previousQuestion = await page.getByTestId('question-text').textContent();
+  await expect(page.getByTestId('question-position')).toHaveText(`${QUESTION_COUNT} / ${QUESTION_COUNT}`);
+  await expect(page.getByTestId('skip-button')).toBeVisible();
+
+  await page.getByTestId('skip-button').click();
+  await page.getByTestId('skip-session-button').click();
+
+  await expect(page.getByTestId('all-played-view')).toBeVisible();
+  await expect(page.getByTestId('congrats-card')).toBeVisible();
+  await expect(page.getByTestId('question-text')).not.toHaveText(previousQuestion ?? '');
+  await expect(page.getByTestId('question-position')).toHaveText(`${QUESTION_COUNT - 1} / ${QUESTION_COUNT - 1}`);
+  await expect(page.getByTestId('skip-button')).toHaveCount(0);
+});
+
+test('skip is only shown on the latest visible question', async ({ page }) => {
+  await page.getByTestId('start-round-button').click();
+  await expect(page.getByTestId('skip-button')).toBeVisible();
+
+  await page.getByTestId('shuffle-button').click();
+  await expect(page.getByTestId('skip-button')).toBeVisible();
+
+  await page.getByTestId('back-button').click();
+  await expect(page.getByTestId('skip-button')).toHaveCount(0);
+
+  await page.getByTestId('forward-button').click();
+  await expect(page.getByTestId('skip-button')).toBeVisible();
+});
+
+test('a skipped question becomes available again after a reload', async ({ page }) => {
+  await page.getByTestId('start-round-button').click();
+
+  const skippedQuestion = await page.getByTestId('question-text').textContent();
+
+  await page.getByTestId('skip-button').click();
+  await page.getByTestId('skip-session-button').click();
+  await page.getByTestId('end-round-button').click();
+  await page.reload();
+  await page.getByTestId('start-round-button').click();
+
+  const storageAfterReload = await readGameStorage(page);
+  await expect(storageAfterReload.blocked).toBeNull();
+
+  let foundSkippedQuestion = false;
+  for (let i = 0; i < QUESTION_COUNT; i += 1) {
+    const currentQuestion = await page.getByTestId('question-text').textContent();
+    if (currentQuestion === (skippedQuestion ?? '')) {
+      foundSkippedQuestion = true;
+      break;
+    }
+
+    if (await page.getByTestId('shuffle-button').isDisabled()) {
+      break;
+    }
+
+    await page.getByTestId('shuffle-button').click();
+  }
+
+  expect(foundSkippedQuestion).toBe(true);
+});
+
+test('a skipped question becomes available again after ending the round', async ({ page }) => {
+  await page.getByTestId('start-round-button').click();
+
+  const skippedQuestion = await page.getByTestId('question-text').textContent();
+
+  await page.getByTestId('skip-button').click();
+  await page.getByTestId('skip-session-button').click();
+  await page.getByTestId('end-round-button').click();
+  await page.getByTestId('start-round-button').click();
+
+  const storageAfterRestart = await readGameStorage(page);
+  await expect(storageAfterRestart.blocked).toBeNull();
+
+  let foundSkippedQuestion = false;
+  for (let i = 0; i < QUESTION_COUNT; i += 1) {
+    const currentQuestion = await page.getByTestId('question-text').textContent();
+    if (currentQuestion === (skippedQuestion ?? '')) {
+      foundSkippedQuestion = true;
+      break;
+    }
+
+    if (await page.getByTestId('shuffle-button').isDisabled()) {
+      break;
+    }
+
+    await page.getByTestId('shuffle-button').click();
+  }
+
+  expect(foundSkippedQuestion).toBe(true);
+});
+
+test('a permanently blocked question stays excluded after reload and reduces the total count', async ({ page }) => {
+  await page.getByTestId('start-round-button').click();
+
+  const blockedQuestion = await page.getByTestId('question-text').textContent();
+
+  await page.getByTestId('skip-button').click();
+  await expect(page.getByTestId('skip-question-modal')).toBeVisible();
+  await page.getByTestId('skip-permanent-button').click();
+
+  await expect(page.getByTestId('question-position')).toHaveText(`1 / ${QUESTION_COUNT - 1}`);
+
+  await page.getByTestId('end-round-button').click();
+  await expect(page.getByTestId('hero-progress')).toContainText(`1 von ${QUESTION_COUNT - 1}`);
+
+  const storageAfterBlock = await readGameStorage(page);
+  await expect(JSON.parse(storageAfterBlock.blocked ?? '[]')).toHaveLength(1);
+
+  await page.reload();
+  await expect(page.getByTestId('hero-progress')).toContainText(`1 von ${QUESTION_COUNT - 1}`);
+
+  await page.getByTestId('start-round-button').click();
+  await expect(page.getByTestId('question-text')).not.toHaveText(blockedQuestion ?? '');
+  await expect(page.getByTestId('question-position')).toHaveText(`1 / ${QUESTION_COUNT - 1}`);
 });
 
 test('starts a round, shuffles forward, and navigates back', async ({ page }) => {

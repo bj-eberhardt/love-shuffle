@@ -9,8 +9,11 @@ function getRandomFromArray<T>(arr: T[]) {
 }
 
 export default function useQuestionManager(selectedCategories: QuestionCategory[]) {
-  const { set: usedSet, add: addUsed, clear: clearPersisted, size } = useLocalStorageSet('loveShuffle.usedQuestions.v1');
+  const { set: usedSet, add: addUsed, remove: removeUsed, clear: clearPersisted, size } = useLocalStorageSet('loveShuffle.usedQuestions.v1');
+  const { set: blockedSet, add: addBlocked, clear: clearBlocked, size: blockedCount } = useLocalStorageSet('loveShuffle.blockedQuestions.v1');
   const historyStorageKey = 'loveShuffle.history.v1';
+  const [skippedSet, setSkippedSet] = useState<Set<number>>(() => new Set());
+  const [skipCandidateIndex, setSkipCandidateIndex] = useState<number | null>(null);
 
   const [history, setHistory] = useState<number[]>(() => {
     const raw = safeGetItem<number[]>(historyStorageKey);
@@ -42,8 +45,14 @@ export default function useQuestionManager(selectedCategories: QuestionCategory[
   const selectableIndexSet = useMemo(() => new Set(selectableIndices), [selectableIndices]);
 
   const remainingIndices = useMemo(() => {
-    return selectableIndices.filter((index) => !usedSet.has(index));
-  }, [selectableIndices, usedSet]);
+    return selectableIndices.filter((index) => !usedSet.has(index) && !skippedSet.has(index) && !blockedSet.has(index));
+  }, [blockedSet, selectableIndices, skippedSet, usedSet]);
+  const skippedCountInSelection = useMemo(() => {
+    return selectableIndices.filter((index) => skippedSet.has(index)).length;
+  }, [selectableIndices, skippedSet]);
+  const blockedCountInSelection = useMemo(() => {
+    return selectableIndices.filter((index) => blockedSet.has(index)).length;
+  }, [blockedSet, selectableIndices]);
 
   const normalizedPointer = history.length === 0
     ? -1
@@ -62,6 +71,10 @@ export default function useQuestionManager(selectedCategories: QuestionCategory[
   const selectionPointer = currentIndexInSelection
     ? selectionHistoryPositions.indexOf(normalizedPointer)
     : -1;
+  const canSkipCurrent =
+    currentIndexInSelection &&
+    selectionPointer === selectionHistoryPositions.length - 1 &&
+    currentIndex === skipCandidateIndex;
 
   const next = useCallback(() => {
     if (remainingIndices.length === 0) return undefined;
@@ -70,6 +83,7 @@ export default function useQuestionManager(selectedCategories: QuestionCategory[
     setHistory((prevHistory) => {
       const nextHistory = [...prevHistory, nextIndex];
       setHistoryPointer(nextHistory.length - 1);
+      setSkipCandidateIndex(nextIndex);
       persistHistory(nextHistory);
       return nextHistory;
     });
@@ -89,10 +103,12 @@ export default function useQuestionManager(selectedCategories: QuestionCategory[
 
   const jumpToLatestInSelection = useCallback(() => {
     if (selectionHistoryPositions.length === 0) {
+      setSkipCandidateIndex(null);
       setHistoryPointer(-1);
       return false;
     }
 
+    setSkipCandidateIndex(null);
     setHistoryPointer(selectionHistoryPositions[selectionHistoryPositions.length - 1]);
     return true;
   }, [selectionHistoryPositions]);
@@ -100,13 +116,57 @@ export default function useQuestionManager(selectedCategories: QuestionCategory[
   const resetHistory = useCallback(() => {
     setHistory([]);
     setHistoryPointer(-1);
+    setSkipCandidateIndex(null);
     safeRemoveItem(historyStorageKey);
   }, [historyStorageKey]);
 
   const resetAll = useCallback(() => {
     resetHistory();
+    clearBlocked();
+    setSkippedSet(new Set());
     clearPersisted();
-  }, [clearPersisted, resetHistory]);
+  }, [clearBlocked, clearPersisted, resetHistory]);
+
+  const clearSkippedSession = useCallback(() => {
+    setSkipCandidateIndex(null);
+    setSkippedSet(new Set());
+  }, []);
+
+  const skipCurrent = useCallback((mode: 'session' | 'permanent') => {
+    if (typeof currentIndex !== 'number' || !canSkipCurrent) return false;
+
+    const hasRemainingAfterSkip = remainingIndices.some((index) => index !== currentIndex);
+
+    setSkipCandidateIndex(null);
+
+    if (mode === 'permanent') {
+      addBlocked(currentIndex);
+    } else {
+      setSkippedSet((prev) => {
+        const copy = new Set(prev);
+        copy.add(currentIndex);
+        return copy;
+      });
+    }
+
+    removeUsed(currentIndex);
+
+    setHistory((prevHistory) => {
+      const currentPosition = prevHistory.indexOf(currentIndex);
+      if (currentPosition === -1) return prevHistory;
+
+      const nextHistory = prevHistory.filter((index, position) => !(index === currentIndex && position === currentPosition));
+      const nextPointer = nextHistory.length === 0
+        ? -1
+        : Math.min(Math.max(currentPosition - 1, 0), nextHistory.length - 1);
+
+      setHistoryPointer(nextPointer);
+      persistHistory(nextHistory);
+      return nextHistory;
+    });
+
+    return { skipped: true, hasRemainingAfterSkip };
+  }, [addBlocked, canSkipCurrent, currentIndex, persistHistory, remainingIndices, removeUsed]);
 
   const usedCountInSelection = useMemo(() => {
     return selectableIndices.filter((index) => usedSet.has(index)).length;
@@ -122,15 +182,19 @@ export default function useQuestionManager(selectedCategories: QuestionCategory[
     historyPointer: normalizedPointer,
     historyPointerInSelection: selectionPointer,
     historyCountInSelection: selectionHistoryPositions.length,
+    canSkipCurrent,
     next,
+    skipCurrent,
     prev,
     forward,
     jumpToLatestInSelection,
+    clearSkippedSession,
     resetHistory,
     clearPersisted,
     resetAll,
     remainingCount: remainingIndices.length,
-    filteredTotalCount: selectableIndices.length,
+    filteredTotalCount: selectableIndices.length - skippedCountInSelection - blockedCountInSelection,
+    playableQuestionCount: questions.length - blockedCount,
     usedCount: size,
     usedCountInSelection,
   } as const;

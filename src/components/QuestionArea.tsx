@@ -8,10 +8,12 @@ export type QuestionAreaProps = {
   index?: number;
   total: number;
   onShuffle: () => void;
+  onSkip: () => void;
   onBack: () => void;
   onForward: () => void;
   hint?: string;
   disableShuffle?: boolean;
+  showSkip?: boolean;
   showBack?: boolean;
   showForward?: boolean;
 };
@@ -21,10 +23,12 @@ export function QuestionArea({
   index,
   total,
   onShuffle,
+  onSkip,
   onBack,
   onForward,
   hint,
   disableShuffle,
+  showSkip,
   showBack,
   showForward,
 }: QuestionAreaProps) {
@@ -52,9 +56,11 @@ export function QuestionArea({
 
       <Controls
         onShuffle={onShuffle}
+        onSkip={onSkip}
         onBack={onBack}
         onForward={onForward}
         disableShuffle={disableShuffle}
+        showSkip={showSkip}
         showBack={showBack}
         showForward={showForward}
       />

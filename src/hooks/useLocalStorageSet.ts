@@ -21,6 +21,23 @@ export default function useLocalStorageSet(key: string) {
     });
   }, [persist]);
 
+  const remove = useCallback((n: number) => {
+    setSetState((prev) => {
+      if (!prev.has(n)) return prev;
+
+      const copy = new Set(prev);
+      copy.delete(n);
+
+      if (copy.size === 0) {
+        safeRemoveItem(key);
+      } else {
+        persist(copy);
+      }
+
+      return copy;
+    });
+  }, [key, persist]);
+
   const clear = useCallback(() => {
     setSetState(new Set());
     safeRemoveItem(key);
@@ -29,6 +46,7 @@ export default function useLocalStorageSet(key: string) {
   return {
     set: setState,
     add,
+    remove,
     clear,
     size: setState.size,
   } as const;

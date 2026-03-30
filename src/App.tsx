@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { IntroScreen } from './components/IntroScreen';
 import { QuestionScreen } from './components/QuestionScreen';
+import { QuestionsDataState } from './components/QuestionsDataState';
 import useQuestionManager from './hooks/useQuestionManager';
-import type { QuestionCategory } from './types/questions';
+import useRuntimeQuestions from './hooks/useRuntimeQuestions';
+import type { Question, QuestionCategory } from './types/questions';
 import { requestDocumentFullscreen } from './utils/fullscreen';
 import { getCategorySummary, QUESTION_CATEGORY_ORDER } from './utils/questionCategories';
 
@@ -11,6 +13,34 @@ function haveSameCategories(a: QuestionCategory[], b: QuestionCategory[]) {
 }
 
 export default function App() {
+  const runtimeQuestions = useRuntimeQuestions();
+
+  if (runtimeQuestions.status === 'loading') {
+    return (
+      <main className="app-shell" data-testid="app-shell" data-mode="loading">
+        <QuestionsDataState mode="loading" />
+      </main>
+    );
+  }
+
+  if (runtimeQuestions.status === 'error') {
+    return (
+      <main className="app-shell" data-testid="app-shell" data-mode="error">
+        <QuestionsDataState mode="error" summary={runtimeQuestions.summary} issues={runtimeQuestions.issues} />
+      </main>
+    );
+  }
+
+  return <LoadedApp questions={runtimeQuestions.questions} datasetKey={runtimeQuestions.datasetKey} />;
+}
+
+function LoadedApp({
+  questions,
+  datasetKey,
+}: {
+  questions: Question[];
+  datasetKey: string;
+}) {
   const [activeCategories, setActiveCategories] = useState<QuestionCategory[]>(QUESTION_CATEGORY_ORDER);
   const [modalCategories, setModalCategories] = useState<QuestionCategory[]>([]);
   const [lastPlayedCategories, setLastPlayedCategories] = useState<QuestionCategory[]>(QUESTION_CATEGORY_ORDER);
@@ -22,7 +52,7 @@ export default function App() {
   const [restartPending, setRestartPending] = useState(false);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [isSkipModalOpen, setIsSkipModalOpen] = useState(false);
-  const qm = useQuestionManager(activeCategories);
+  const qm = useQuestionManager(questions, activeCategories, datasetKey);
   const version = __APP_VERSION__;
 
   const activeFilterSummary = useMemo(() => getCategorySummary(activeCategories), [activeCategories]);

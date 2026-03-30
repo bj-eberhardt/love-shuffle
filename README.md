@@ -11,20 +11,19 @@ oder einfach mal wieder tiefgründige Fragen stellen möchten.
 
 ## Kurzbeschreibung
 
-- Fragen werden zur Laufzeit aus `public/data/questions.json` geladen.
-- Die Kategorien sind fest vorgegeben und werden validiert.
-- Gespielte, übersprungene und dauerhaft gesperrte Fragen werden im Browser gespeichert.
-- Die App ist mobile-first gestaltet und kann statisch ausgeliefert werden.
+- Fragen werden zur Laufzeit geladen und lassen sich beliebig anpassen.
+- Gespielte, übersprungene und dauerhaft gesperrte Fragen werden im Browser gespeichert. So kann zu jeder Zeit mit den Fragen weitergemacht werden, ohne dass etwas verloren geht.
+- Die App ist für mobile Geräte optimiert.
+
 
 ## Highlights
 
-- Mobile-first Design mit Intro-, Fragen- und Glückwunsch-Ansicht
-- Shuffle per Button, Leertaste und Enter
-- Kategorienfilter mit Modal
+- Mobile-first Design
+- Shuffle der Fragen per Button, Leertaste und Enter-Taste
+- Kategorienfilter, falls zu intime Frage nicht in den aktuellen Raum passen
 - Temporäres Überspringen oder dauerhaftes Sperren einzelner Fragen
-- Fortschritt, History und Sperren bleiben im Browser erhalten
-- Laufzeitvalidierung der Fragen-Datei mit genauer Fehleranzeige im Frontend
-- Docker-Multi-Stage-Build mit nginx für statisches Hosting
+- Fortschritt, Fragen-History und Sperrung von unbequemen Fragen bleiben im Browser erhalten
+- Docker-Multi-Stage-Build mit nginx für einfaches statisches Hosting inklusive eigener Fragen-Datei
 
 ## Fragen-Datei
 
@@ -33,6 +32,7 @@ Die App lädt ihre Fragen aus:
 ```text
 /data/questions.json
 ```
+und lässt sich damit perfekt mit einer eigenen Fragen-Datei anpassen. Das Format der Datei ist dabei strikt vorgegeben, damit die App die Fragen korrekt laden und darstellen kann.
 
 ### Format
 
@@ -60,19 +60,18 @@ Die Datei muss ein JSON-Array mit Objekten sein:
 - `text`
   Muss ein nicht-leerer String sein.
 - `category`
-  Muss eine der erlaubten Kategorien sein.
+  Muss eine der erlaubten Kategorien sein: 
 
-### Erlaubte Kategorien
-
-- `sex-intimitaet`
-- `verbundenheit-wachstum`
-- `erinnerungen`
-- `beziehung`
-- `ueber-dich`
+  - `sex-intimitaet`
+  - `verbundenheit-wachstum`
+  - `erinnerungen`
+  - `beziehung`
+  - `ueber-dich`
 
 ## Eigene Fragen-Datei mit Docker Compose mounten
 
-Du kannst eine eigene Datei vom Host in den Container mounten und damit die Standardfragen ersetzen.
+Du kannst eine eigene Datei vom Host in den Container mounten und damit die Standardfragen
+ersetzen.
 
 Beispiel `docker-compose.yml`:
 
@@ -87,13 +86,13 @@ services:
       - ./questions.json:/usr/share/nginx/html/data/questions.json:ro
 ```
 
-Danach starten:
+Danach starten via:
 
 ```bash
 docker compose up -d
 ```
 
-Die App lädt dann zur Laufzeit deine gemountete Datei statt der Standarddatei aus dem Image.
+Die App lädt dann zur Laufzeit deine gemountete Datei.
 
 ## Entwickler / Local Development
 
@@ -147,5 +146,3 @@ E2E-Tests mit Playwright:
 ```bash
 npm run test:e2e
 ```
-
-Headed/UI-Varianten hängen von deinen vorhandenen npm-Skripten ab.

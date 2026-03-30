@@ -1,18 +1,18 @@
 import { useCallback, useState } from 'react';
 import { safeGetItem, safeSetItem, safeRemoveItem } from '../utils/storage';
 
-export default function useLocalStorageSet(key: string) {
-  const [setState, setSetState] = useState<Set<number>>(() => {
-    const raw = safeGetItem<number[]>(key);
+export default function useLocalStorageSet<T extends string | number>(key: string) {
+  const [setState, setSetState] = useState<Set<T>>(() => {
+    const raw = safeGetItem<T[]>(key);
     if (raw && Array.isArray(raw)) return new Set(raw);
-    return new Set<number>();
+    return new Set<T>();
   });
 
-  const persist = useCallback((s: Set<number>) => {
+  const persist = useCallback((s: Set<T>) => {
     safeSetItem(key, Array.from(s));
   }, [key]);
 
-  const add = useCallback((n: number) => {
+  const add = useCallback((n: T) => {
     setSetState((prev) => {
       const copy = new Set(prev);
       copy.add(n);
@@ -21,7 +21,7 @@ export default function useLocalStorageSet(key: string) {
     });
   }, [persist]);
 
-  const remove = useCallback((n: number) => {
+  const remove = useCallback((n: T) => {
     setSetState((prev) => {
       if (!prev.has(n)) return prev;
 

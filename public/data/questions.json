@@ -1,0 +1,467 @@
+[
+  {
+    "id": "q001",
+    "text": "Wofür fühlst du dich in unserer Beziehung im Moment am meisten dankbar?",
+    "category": "verbundenheit-wachstum"
+  },
+  {
+    "id": "q002",
+    "text": "Wann hast du dich zuletzt von mir besonders gesehen gefühlt?",
+    "category": "verbundenheit-wachstum"
+  },
+  {
+    "id": "q003",
+    "text": "Was bedeutet Zuneigung für dich im Alltag?",
+    "category": "beziehung"
+  },
+  {
+    "id": "q004",
+    "text": "Welche kleine Geste lässt dein Herz sofort weicher werden?",
+    "category": "verbundenheit-wachstum"
+  },
+  {
+    "id": "q005",
+    "text": "Welche Art von Nähe tut dir gerade besonders gut?",
+    "category": "verbundenheit-wachstum"
+  },
+  {
+    "id": "q006",
+    "text": "Wann fühlst du dich von mir am meisten unterstützt?",
+    "category": "verbundenheit-wachstum"
+  },
+  {
+    "id": "q007",
+    "text": "Was ist ein liebevoller Wunsch, den du gerade in dir trägst?",
+    "category": "ueber-dich"
+  },
+  {
+    "id": "q008",
+    "text": "Wie können wir miteinander noch bewusster schöne Momente schaffen?",
+    "category": "verbundenheit-wachstum"
+  },
+  {
+    "id": "q009",
+    "text": "Welche gemeinsamen Rituale würden dir mehr Verbundenheit schenken?",
+    "category": "verbundenheit-wachstum"
+  },
+  {
+    "id": "q010",
+    "text": "Welches Kompliment würdest du heute gerne hören?",
+    "category": "ueber-dich"
+  },
+  {
+    "id": "q011",
+    "text": "Welche gemeinsame Zukunftsidee fühlt sich für dich warm und richtig an?",
+    "category": "verbundenheit-wachstum"
+  },
+  {
+    "id": "q012",
+    "text": "Wie können wir in schwierigen Momenten zärtlicher miteinander umgehen?",
+    "category": "verbundenheit-wachstum"
+  },
+  {
+    "id": "q013",
+    "text": "Was ist deine liebste Erinnerung an unsere gemeinsame Zeit?",
+    "category": "erinnerungen"
+  },
+  {
+    "id": "q014",
+    "text": "Was ist deine liebste Kindheitserinnerung?",
+    "category": "erinnerungen"
+  },
+  {
+    "id": "q015",
+    "text": "Was war unser bestes Date?",
+    "category": "erinnerungen"
+  },
+  {
+    "id": "q016",
+    "text": "Was war unser bester gemeinsamer Urlaub?",
+    "category": "erinnerungen"
+  },
+  {
+    "id": "q017",
+    "text": "Was ist eine Sache, die du getan hast, um mich zu beeindrucken?",
+    "category": "erinnerungen"
+  },
+  {
+    "id": "q018",
+    "text": "Was war der lustigste Moment in unserer Beziehung?",
+    "category": "erinnerungen"
+  },
+  {
+    "id": "q019",
+    "text": "Was hat dich dazu veranlasst, dich in mich zu verlieben?",
+    "category": "erinnerungen"
+  },
+  {
+    "id": "q020",
+    "text": "Was ist das beste Geschenk, das du je von mir bekommen hast?",
+    "category": "erinnerungen"
+  },
+  {
+    "id": "q021",
+    "text": "Was ist das Romantischste, das ich für dich getan habe?",
+    "category": "erinnerungen"
+  },
+  {
+    "id": "q022",
+    "text": "Welche Momente in unserer Beziehung haben uns näher zusammengebracht?",
+    "category": "erinnerungen"
+  },
+  {
+    "id": "q023",
+    "text": "Was war dein erster Eindruck von meiner Familie?",
+    "category": "erinnerungen"
+  },
+  {
+    "id": "q024",
+    "text": "Wenn du einen Tag unserer Beziehung noch einmal erleben könntest, welcher wäre das?",
+    "category": "erinnerungen"
+  },
+  {
+    "id": "q025",
+    "text": "Was ist dir am meisten von unserem ersten Kuss in Erinnerung geblieben?",
+    "category": "erinnerungen"
+  },
+  {
+    "id": "q026",
+    "text": "Was vermisst du am meisten aus der Anfangszeit unserer Beziehung?",
+    "category": "erinnerungen"
+  },
+  {
+    "id": "q027",
+    "text": "Worüber lachen wir am meisten zusammen?",
+    "category": "erinnerungen"
+  },
+  {
+    "id": "q028",
+    "text": "Was war der größte Wendepunkt in unserer Beziehung?",
+    "category": "erinnerungen"
+  },
+  {
+    "id": "q029",
+    "text": "Welche meiner Eigenschaften findest du besonders attraktiv?",
+    "category": "sex-intimitaet"
+  },
+  {
+    "id": "q030",
+    "text": "Welche erogenen Zonen deines Körpers sollte ich mehr beachten?",
+    "category": "sex-intimitaet"
+  },
+  {
+    "id": "q031",
+    "text": "Wo wirst du nicht gerne berührt?",
+    "category": "sex-intimitaet"
+  },
+  {
+    "id": "q032",
+    "text": "Was ist deine Lieblings-Sexstellung?",
+    "category": "sex-intimitaet"
+  },
+  {
+    "id": "q033",
+    "text": "Wann fühlst du dich von mir am meisten begehrt?",
+    "category": "sex-intimitaet"
+  },
+  {
+    "id": "q034",
+    "text": "Was kann dich beim Sex ablenken?",
+    "category": "sex-intimitaet"
+  },
+  {
+    "id": "q035",
+    "text": "Stehst du auf Dirty Talk?",
+    "category": "sex-intimitaet"
+  },
+  {
+    "id": "q036",
+    "text": "Wovon hättest du in unserem Sexleben gerne mehr?",
+    "category": "sex-intimitaet"
+  },
+  {
+    "id": "q037",
+    "text": "Was mache ich abseits des Schlafzimmers, das dich anturnt?",
+    "category": "sex-intimitaet"
+  },
+  {
+    "id": "q038",
+    "text": "Was ist deine liebste sexuelle Erinnerung an mich?",
+    "category": "sex-intimitaet"
+  },
+  {
+    "id": "q039",
+    "text": "Wie erhältst du am liebsten Liebe und Zuneigung von mir?",
+    "category": "sex-intimitaet"
+  },
+  {
+    "id": "q040",
+    "text": "Nenne einen Ort, an dem du noch nie Sex hattest, aber gerne Sex haben würdest?",
+    "category": "sex-intimitaet"
+  },
+  {
+    "id": "q041",
+    "text": "Welche deiner sexuellen Fantasien würdest du gerne ausprobieren?",
+    "category": "sex-intimitaet"
+  },
+  {
+    "id": "q042",
+    "text": "Zu welcher Tageszeit hast du am liebsten Sex?",
+    "category": "sex-intimitaet"
+  },
+  {
+    "id": "q043",
+    "text": "Wo wirst du von mir am liebsten berührt?",
+    "category": "sex-intimitaet"
+  },
+  {
+    "id": "q044",
+    "text": "Welche Art von Vorspiel magst du am liebsten?",
+    "category": "sex-intimitaet"
+  },
+  {
+    "id": "q045",
+    "text": "Was sind drei Dinge auf deiner Sex-Bucket-Liste?",
+    "category": "sex-intimitaet"
+  },
+  {
+    "id": "q046",
+    "text": "Gibt es etwas, worauf du stehst, das du mir noch nie erzählt hast?",
+    "category": "sex-intimitaet"
+  },
+  {
+    "id": "q047",
+    "text": "Was hältst du davon, Zärtlichkeiten in der Öffentlichkeit auszutauschen?",
+    "category": "sex-intimitaet"
+  },
+  {
+    "id": "q048",
+    "text": "Wie kommst du beim Sex zuverlässig zum Orgasmus?",
+    "category": "sex-intimitaet"
+  },
+  {
+    "id": "q049",
+    "text": "Was ist etwas, das ich tue, das dich immer zum Lachen bringt?",
+    "category": "ueber-dich"
+  },
+  {
+    "id": "q050",
+    "text": "Was ist das Verrückteste, das du mit mir tun würdest?",
+    "category": "ueber-dich"
+  },
+  {
+    "id": "q051",
+    "text": "Wohin würdest du dich jetzt am liebsten mit mir teleportieren?",
+    "category": "ueber-dich"
+  },
+  {
+    "id": "q052",
+    "text": "Wenn du mir einen Ratschlag geben könntest, welcher wäre das?",
+    "category": "ueber-dich"
+  },
+  {
+    "id": "q053",
+    "text": "Was bewunderst du an mir?",
+    "category": "beziehung"
+  },
+  {
+    "id": "q054",
+    "text": "Auf welche Weise beeinflusse ich dein Leben positiv?",
+    "category": "beziehung"
+  },
+  {
+    "id": "q055",
+    "text": "Was sind drei Dinge, ohne die du nicht leben könntest?",
+    "category": "ueber-dich"
+  },
+  {
+    "id": "q056",
+    "text": "Wie zeigst du deine Liebe zu jemandem?",
+    "category": "ueber-dich"
+  },
+  {
+    "id": "q057",
+    "text": "Was an unserer Beziehung macht dich wirklich glücklich?",
+    "category": "beziehung"
+  },
+  {
+    "id": "q058",
+    "text": "Was macht dich eifersüchtig?",
+    "category": "ueber-dich"
+  },
+  {
+    "id": "q059",
+    "text": "Wie gut kommunizieren wir miteinander?",
+    "category": "beziehung"
+  },
+  {
+    "id": "q060",
+    "text": "Wie verbringst du am liebsten Zeit mit mir?",
+    "category": "beziehung"
+  },
+  {
+    "id": "q061",
+    "text": "Wo siehst du uns in zehn Jahren?",
+    "category": "verbundenheit-wachstum"
+  },
+  {
+    "id": "q062",
+    "text": "Welche Angewohnheiten von mir machen dich wahnsinnig?",
+    "category": "beziehung"
+  },
+  {
+    "id": "q063",
+    "text": "Wie viel \"Alleinzeit\" brauchst du in einer Beziehung?",
+    "category": "ueber-dich"
+  },
+  {
+    "id": "q064",
+    "text": "Was sind kleine Gewohnheiten, die unsere Beziehung verbessern können?",
+    "category": "verbundenheit-wachstum"
+  },
+  {
+    "id": "q065",
+    "text": "Was hoffst du, dass sich in unserer Beziehung niemals ändern wird?",
+    "category": "beziehung"
+  },
+  {
+    "id": "q066",
+    "text": "Wie kann ich dich unterstützen, wenn du mit Problemen zu kämpfen hast?",
+    "category": "verbundenheit-wachstum"
+  },
+  {
+    "id": "q067",
+    "text": "In welchen Bereichen unserer Beziehung siehst du noch Raum für Wachstum?",
+    "category": "verbundenheit-wachstum"
+  },
+  {
+    "id": "q068",
+    "text": "Gibt es Kompromisse, die du in unserer Beziehung eingegangen bist und die du nun bereust?",
+    "category": "beziehung"
+  },
+  {
+    "id": "q069",
+    "text": "Worüber sollte ich besser mit dir kommunizieren?",
+    "category": "verbundenheit-wachstum"
+  },
+  {
+    "id": "q070",
+    "text": "Wie sieht für dich ein perfektes Date aus?",
+    "category": "beziehung"
+  },
+  {
+    "id": "q071",
+    "text": "Was sind drei Dinge, die du an mir liebst?",
+    "category": "beziehung"
+  },
+  {
+    "id": "q072",
+    "text": "Worin bin ich gut, ohne es zu wissen?",
+    "category": "beziehung"
+  },
+  {
+    "id": "q073",
+    "text": "Was denkst du, was ich an dir liebe?",
+    "category": "beziehung"
+  },
+  {
+    "id": "q074",
+    "text": "Was vermisst du an mir, wenn ich nicht da bin?",
+    "category": "beziehung"
+  },
+  {
+    "id": "q075",
+    "text": "Woran erkennst du, dass ich einen schlechten Tag habe?",
+    "category": "beziehung"
+  },
+  {
+    "id": "q076",
+    "text": "Wann habe ich dir das letzte Mal das Gefühl gegeben, dass ich dich wertschätze?",
+    "category": "verbundenheit-wachstum"
+  },
+  {
+    "id": "q077",
+    "text": "An welchem Ort bist du am liebsten mit mir?",
+    "category": "beziehung"
+  },
+  {
+    "id": "q078",
+    "text": "Wie habe ich mich verändert, seitdem du mich kennst?",
+    "category": "beziehung"
+  },
+  {
+    "id": "q079",
+    "text": "Was sind die Ziele für unsere Beziehung in den nächsten Jahren?",
+    "category": "verbundenheit-wachstum"
+  },
+  {
+    "id": "q080",
+    "text": "Woran erkennst du, dass ich einen guten Tag habe?",
+    "category": "beziehung"
+  },
+  {
+    "id": "q081",
+    "text": "Was sind Dinge, die du lernen musstest, an mir zu akzeptieren?",
+    "category": "beziehung"
+  },
+  {
+    "id": "q082",
+    "text": "Was sind drei Dinge, die du in unserer Beziehung öfter tun würdest?",
+    "category": "verbundenheit-wachstum"
+  },
+  {
+    "id": "q083",
+    "text": "Was ist etwas, das dich immer zum Lachen bringt?",
+    "category": "ueber-dich"
+  },
+  {
+    "id": "q084",
+    "text": "Wie hat sich die Liebe zu mir im Laufe der Zeit verändert?",
+    "category": "beziehung"
+  },
+  {
+    "id": "q085",
+    "text": "Welche Eigenart von mir findest du süß?",
+    "category": "beziehung"
+  },
+  {
+    "id": "q086",
+    "text": "Was sind kleine Dinge, die deinen Tag besser machen?",
+    "category": "ueber-dich"
+  },
+  {
+    "id": "q087",
+    "text": "Wie stellst du dir unsere Zukunft vor?",
+    "category": "verbundenheit-wachstum"
+  },
+  {
+    "id": "q088",
+    "text": "Welche Abenteuer möchtest du mit mir erleben?",
+    "category": "verbundenheit-wachstum"
+  },
+  {
+    "id": "q089",
+    "text": "Wie können wir stärker an unserer Beziehung arbeiten, wenn es mal schwierig wird?",
+    "category": "verbundenheit-wachstum"
+  },
+  {
+    "id": "q090",
+    "text": "Was würdest du tun, wenn du einen Tag unsichtbar wärst?",
+    "category": "ueber-dich"
+  },
+  {
+    "id": "q091",
+    "text": "Was ist dir in einer Beziehung am wichtigsten?",
+    "category": "ueber-dich"
+  },
+  {
+    "id": "q092",
+    "text": "Was bedeutet für dich „Zuhause“?",
+    "category": "ueber-dich"
+  },
+  {
+    "id": "q093",
+    "text": "Was brauchst du, wenn es dir schlecht geht?",
+    "category": "ueber-dich"
+  }
+]

@@ -1,10 +1,16 @@
 import { expect, test, type Page } from '@playwright/test';
 // @ts-ignore
-import questions from '../../src/data/questions.json' with { type: 'json' };
+import questions from '../../public/data/questions.json' with { type: 'json' };
 import type { Question, QuestionCategory } from '../../src/types/questions';
+import { createQuestionsDatasetKey } from '../../src/utils/questionLoader';
 
 const typedQuestions = questions as Question[];
 const QUESTION_COUNT = typedQuestions.length;
+const DATASET_KEY = createQuestionsDatasetKey(typedQuestions);
+
+function getStorageKey(suffix: 'usedQuestions' | 'history' | 'blockedQuestions') {
+  return `loveShuffle.${suffix}.${DATASET_KEY}.v1`;
+}
 
 function getCategoryQuestionCount(categories: QuestionCategory[]) {
   const categorySet = new Set(categories);
@@ -26,19 +32,20 @@ async function bootstrapApp(page: Page) {
 }
 
 async function seedUsedQuestions(page: Page, count: number) {
-  await page.addInitScript(([storageKey, questionCount]) => {
-    const usedQuestions = Array.from({ length: questionCount }, (_, index) => index);
+  const usedQuestionIds = typedQuestions.slice(0, count).map((question) => question.id);
+
+  await page.addInitScript(([storageKey, usedQuestions]) => {
     window.localStorage.setItem(storageKey, JSON.stringify(usedQuestions));
-  }, ['loveShuffle.usedQuestions.v1', count] as const);
+  }, [getStorageKey('usedQuestions'), usedQuestionIds] as const);
 }
 
 async function readGameStorage(page: Page) {
-  return page.evaluate(() => ({
-    used: window.localStorage.getItem('loveShuffle.usedQuestions.v1'),
-    history: window.localStorage.getItem('loveShuffle.history.v1'),
-    blocked: window.localStorage.getItem('loveShuffle.blockedQuestions.v1'),
+  return page.evaluate((datasetKey) => ({
+    used: window.localStorage.getItem(`loveShuffle.usedQuestions.${datasetKey}.v1`),
+    history: window.localStorage.getItem(`loveShuffle.history.${datasetKey}.v1`),
+    blocked: window.localStorage.getItem(`loveShuffle.blockedQuestions.${datasetKey}.v1`),
     pointer: window.localStorage.getItem('loveShuffle.historyPointer.v1'),
-  }));
+  }), DATASET_KEY);
 }
 
 async function startFilteredRound(page: Page, categories: QuestionCategory[]) {
@@ -50,6 +57,25 @@ async function startFilteredRound(page: Page, categories: QuestionCategory[]) {
   }
 
   await page.getByTestId('start-filtered-round-button').click();
+}
+
+async function expectQuestionsFileError(page: Page, body: string, expectedTexts: string[]) {
+  await page.route('**/data/questions.json', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body,
+    });
+  });
+
+  await page.reload();
+
+  await expect(page.getByTestId('app-shell')).toHaveAttribute('data-mode', 'error');
+  await expect(page.getByTestId('questions-error-state')).toBeVisible();
+
+  for (const expectedText of expectedTexts) {
+    await expect(page.getByTestId('questions-error-list')).toContainText(expectedText);
+  }
 }
 
 test.beforeEach(async ({ page }) => {
@@ -65,6 +91,51 @@ test('renders the intro view with footer version', async ({ page }) => {
   await expect(page.getByTestId('intro-tips')).toBeVisible();
   await expect(page.getByTestId('home-footer')).toBeVisible();
   await expect(page.getByTestId('app-version')).toContainText(/^Version \d+\.\d+\.\d+/);
+});
+
+test('shows a detailed frontend error when the runtime questions file has an invalid category', async ({ page }) => {
+  await expectQuestionsFileError(
+    page,
+    JSON.stringify([{ id: 'broken-question', text: 'Testfrage', category: 'invalid-category' }]),
+    ['$[0].category', 'Ungültige Kategorie'],
+  );
+});
+
+test('shows a detailed frontend error when the runtime questions file has duplicate ids', async ({ page }) => {
+  await expectQuestionsFileError(
+    page,
+    JSON.stringify([
+      { id: 'duplicate-id', text: 'Erste Frage', category: 'beziehung' },
+      { id: 'duplicate-id', text: 'Zweite Frage', category: 'erinnerungen' },
+    ]),
+    ['$[1].id', 'doppelt vorhanden'],
+  );
+});
+
+test('shows a detailed frontend error when the runtime questions file has the wrong root structure', async ({ page }) => {
+  await expectQuestionsFileError(
+    page,
+    JSON.stringify({ id: 'wrong-root', text: 'Keine Array-Struktur', category: 'beziehung' }),
+    ['$', 'JSON-Array mit Fragen'],
+  );
+});
+
+test('shows a detailed frontend error when the runtime questions file contains malformed entries', async ({ page }) => {
+  await expectQuestionsFileError(
+    page,
+    JSON.stringify([
+      'not-an-object',
+      { id: '', text: '', category: 'beziehung' },
+      { id: 'missing-category', text: 'Ohne Kategorie' },
+    ]),
+    [
+      '$[0]',
+      'muss ein Objekt sein',
+      '$[1].id',
+      '$[1].text',
+      '$[2].category',
+    ],
+  );
 });
 
 test('opens the category modal with validation and can select all categories', async ({ page }) => {

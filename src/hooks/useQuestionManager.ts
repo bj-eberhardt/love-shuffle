@@ -1,5 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
-import questions from '../data/questions.json';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { Question, QuestionCategory } from '../types/questions';
 import { safeGetItem, safeRemoveItem, safeSetItem } from '../utils/storage';
 import useLocalStorageSet from './useLocalStorageSet';
@@ -8,88 +7,123 @@ function getRandomFromArray<T>(arr: T[]) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-export default function useQuestionManager(selectedCategories: QuestionCategory[]) {
-  const { set: usedSet, add: addUsed, remove: removeUsed, clear: clearPersisted, size } = useLocalStorageSet('loveShuffle.usedQuestions.v1');
-  const { set: blockedSet, add: addBlocked, clear: clearBlocked, size: blockedCount } = useLocalStorageSet('loveShuffle.blockedQuestions.v1');
-  const historyStorageKey = 'loveShuffle.history.v1';
-  const [skippedSet, setSkippedSet] = useState<Set<number>>(() => new Set());
-  const [skipCandidateIndex, setSkipCandidateIndex] = useState<number | null>(null);
+function getStorageKey(datasetKey: string, suffix: string) {
+  return `loveShuffle.${suffix}.${datasetKey}.v1`;
+}
 
-  const [history, setHistory] = useState<number[]>(() => {
-    const raw = safeGetItem<number[]>(historyStorageKey);
+export default function useQuestionManager(
+  questions: Question[],
+  selectedCategories: QuestionCategory[],
+  datasetKey: string,
+) {
+  const usedStorageKey = getStorageKey(datasetKey, 'usedQuestions');
+  const blockedStorageKey = getStorageKey(datasetKey, 'blockedQuestions');
+  const historyStorageKey = getStorageKey(datasetKey, 'history');
+
+  const { set: usedSet, add: addUsed, remove: removeUsed, clear: clearPersisted, size } = useLocalStorageSet<string>(usedStorageKey);
+  const { set: blockedSet, add: addBlocked, clear: clearBlocked, size: blockedCount } = useLocalStorageSet<string>(blockedStorageKey);
+  const [skippedSet, setSkippedSet] = useState<Set<string>>(() => new Set());
+  const [skipCandidateId, setSkipCandidateId] = useState<string | null>(null);
+
+  const validQuestionIds = useMemo(() => new Set(questions.map((question) => question.id)), [questions]);
+
+  const [history, setHistory] = useState<string[]>(() => {
+    const raw = safeGetItem<string[]>(historyStorageKey);
     if (!raw || !Array.isArray(raw)) return [];
-    return raw.filter((index) => Number.isInteger(index) && index >= 0 && index < questions.length);
+    return raw.filter((id) => typeof id === 'string');
   });
 
   const [historyPointer, setHistoryPointer] = useState<number>(() => {
-    const raw = safeGetItem<number[]>(historyStorageKey);
+    const raw = safeGetItem<string[]>(historyStorageKey);
     return raw && Array.isArray(raw) && raw.length > 0 ? raw.length - 1 : -1;
   });
 
-  const persistHistory = useCallback((nextHistory: number[]) => {
-    if (nextHistory.length === 0) {
+  useEffect(() => {
+    const raw = safeGetItem<string[]>(historyStorageKey);
+    const nextHistory = raw && Array.isArray(raw)
+      ? raw.filter((id) => typeof id === 'string' && validQuestionIds.has(id))
+      : [];
+
+    setHistory(nextHistory);
+    setHistoryPointer(nextHistory.length > 0 ? nextHistory.length - 1 : -1);
+    setSkipCandidateId(null);
+    setSkippedSet(new Set());
+  }, [historyStorageKey, validQuestionIds]);
+
+  const persistHistory = useCallback((nextHistory: string[]) => {
+    const filteredHistory = nextHistory.filter((id) => validQuestionIds.has(id));
+
+    if (filteredHistory.length === 0) {
       safeRemoveItem(historyStorageKey);
       return;
     }
 
-    safeSetItem(historyStorageKey, nextHistory);
-  }, [historyStorageKey]);
+    safeSetItem(historyStorageKey, filteredHistory);
+  }, [historyStorageKey, validQuestionIds]);
 
-  const selectableIndices = useMemo(() => {
+  const questionsById = useMemo(() => {
+    return new Map(questions.map((question) => [question.id, question] as const));
+  }, [questions]);
+
+  const selectableIds = useMemo(() => {
     return questions
-      .map((question, index) => ({ question: question as Question, index }))
-      .filter(({ question }) => selectedCategories.includes(question.category))
-      .map(({ index }) => index);
-  }, [selectedCategories]);
+      .filter((question) => selectedCategories.includes(question.category))
+      .map((question) => question.id);
+  }, [questions, selectedCategories]);
 
-  const selectableIndexSet = useMemo(() => new Set(selectableIndices), [selectableIndices]);
+  const selectableIdSet = useMemo(() => new Set(selectableIds), [selectableIds]);
 
-  const remainingIndices = useMemo(() => {
-    return selectableIndices.filter((index) => !usedSet.has(index) && !skippedSet.has(index) && !blockedSet.has(index));
-  }, [blockedSet, selectableIndices, skippedSet, usedSet]);
+  const remainingIds = useMemo(() => {
+    return selectableIds.filter((id) => !usedSet.has(id) && !skippedSet.has(id) && !blockedSet.has(id));
+  }, [blockedSet, selectableIds, skippedSet, usedSet]);
+
   const skippedCountInSelection = useMemo(() => {
-    return selectableIndices.filter((index) => skippedSet.has(index)).length;
-  }, [selectableIndices, skippedSet]);
+    return selectableIds.filter((id) => skippedSet.has(id)).length;
+  }, [selectableIds, skippedSet]);
+
   const blockedCountInSelection = useMemo(() => {
-    return selectableIndices.filter((index) => blockedSet.has(index)).length;
-  }, [blockedSet, selectableIndices]);
+    return selectableIds.filter((id) => blockedSet.has(id)).length;
+  }, [blockedSet, selectableIds]);
 
-  const normalizedPointer = history.length === 0
+  const normalizedHistory = useMemo(() => history.filter((id) => validQuestionIds.has(id)), [history, validQuestionIds]);
+
+  const normalizedPointer = normalizedHistory.length === 0
     ? -1
-    : Math.min(Math.max(historyPointer, 0), history.length - 1);
+    : Math.min(Math.max(historyPointer, 0), normalizedHistory.length - 1);
 
-  const currentIndex = normalizedPointer >= 0 ? history[normalizedPointer] : undefined;
-  const currentIndexInSelection = typeof currentIndex === 'number' && selectableIndexSet.has(currentIndex);
+  const currentId = normalizedPointer >= 0 ? normalizedHistory[normalizedPointer] : undefined;
+  const currentIdInSelection = typeof currentId === 'string' && selectableIdSet.has(currentId);
 
   const selectionHistoryPositions = useMemo(() => {
-    return history.reduce<number[]>((positions, index, position) => {
-      if (selectableIndexSet.has(index)) positions.push(position);
+    return normalizedHistory.reduce<number[]>((positions, id, position) => {
+      if (selectableIdSet.has(id)) positions.push(position);
       return positions;
     }, []);
-  }, [history, selectableIndexSet]);
+  }, [normalizedHistory, selectableIdSet]);
 
-  const selectionPointer = currentIndexInSelection
+  const selectionPointer = currentIdInSelection
     ? selectionHistoryPositions.indexOf(normalizedPointer)
     : -1;
+
   const canSkipCurrent =
-    currentIndexInSelection &&
+    currentIdInSelection &&
     selectionPointer === selectionHistoryPositions.length - 1 &&
-    currentIndex === skipCandidateIndex;
+    currentId === skipCandidateId;
 
   const next = useCallback(() => {
-    if (remainingIndices.length === 0) return undefined;
+    if (remainingIds.length === 0) return undefined;
 
-    const nextIndex = getRandomFromArray(remainingIndices);
+    const nextId = getRandomFromArray(remainingIds);
     setHistory((prevHistory) => {
-      const nextHistory = [...prevHistory, nextIndex];
+      const nextHistory = [...prevHistory.filter((id) => validQuestionIds.has(id)), nextId];
       setHistoryPointer(nextHistory.length - 1);
-      setSkipCandidateIndex(nextIndex);
+      setSkipCandidateId(nextId);
       persistHistory(nextHistory);
       return nextHistory;
     });
-    addUsed(nextIndex);
-    return nextIndex;
-  }, [remainingIndices, addUsed, persistHistory]);
+    addUsed(nextId);
+    return nextId;
+  }, [addUsed, persistHistory, remainingIds, validQuestionIds]);
 
   const prev = useCallback(() => {
     if (selectionPointer <= 0) return;
@@ -103,12 +137,12 @@ export default function useQuestionManager(selectedCategories: QuestionCategory[
 
   const jumpToLatestInSelection = useCallback(() => {
     if (selectionHistoryPositions.length === 0) {
-      setSkipCandidateIndex(null);
+      setSkipCandidateId(null);
       setHistoryPointer(-1);
       return false;
     }
 
-    setSkipCandidateIndex(null);
+    setSkipCandidateId(null);
     setHistoryPointer(selectionHistoryPositions[selectionHistoryPositions.length - 1]);
     return true;
   }, [selectionHistoryPositions]);
@@ -116,7 +150,7 @@ export default function useQuestionManager(selectedCategories: QuestionCategory[
   const resetHistory = useCallback(() => {
     setHistory([]);
     setHistoryPointer(-1);
-    setSkipCandidateIndex(null);
+    setSkipCandidateId(null);
     safeRemoveItem(historyStorageKey);
   }, [historyStorageKey]);
 
@@ -128,34 +162,35 @@ export default function useQuestionManager(selectedCategories: QuestionCategory[
   }, [clearBlocked, clearPersisted, resetHistory]);
 
   const clearSkippedSession = useCallback(() => {
-    setSkipCandidateIndex(null);
+    setSkipCandidateId(null);
     setSkippedSet(new Set());
   }, []);
 
   const skipCurrent = useCallback((mode: 'session' | 'permanent') => {
-    if (typeof currentIndex !== 'number' || !canSkipCurrent) return false;
+    if (typeof currentId !== 'string' || !canSkipCurrent) return false;
 
-    const hasRemainingAfterSkip = remainingIndices.some((index) => index !== currentIndex);
+    const hasRemainingAfterSkip = remainingIds.some((id) => id !== currentId);
 
-    setSkipCandidateIndex(null);
+    setSkipCandidateId(null);
 
     if (mode === 'permanent') {
-      addBlocked(currentIndex);
+      addBlocked(currentId);
     } else {
       setSkippedSet((prev) => {
         const copy = new Set(prev);
-        copy.add(currentIndex);
+        copy.add(currentId);
         return copy;
       });
     }
 
-    removeUsed(currentIndex);
+    removeUsed(currentId);
 
     setHistory((prevHistory) => {
-      const currentPosition = prevHistory.indexOf(currentIndex);
-      if (currentPosition === -1) return prevHistory;
+      const filteredHistory = prevHistory.filter((id) => validQuestionIds.has(id));
+      const currentPosition = filteredHistory.indexOf(currentId);
+      if (currentPosition === -1) return filteredHistory;
 
-      const nextHistory = prevHistory.filter((index, position) => !(index === currentIndex && position === currentPosition));
+      const nextHistory = filteredHistory.filter((id, position) => !(id === currentId && position === currentPosition));
       const nextPointer = nextHistory.length === 0
         ? -1
         : Math.min(Math.max(currentPosition - 1, 0), nextHistory.length - 1);
@@ -166,19 +201,19 @@ export default function useQuestionManager(selectedCategories: QuestionCategory[
     });
 
     return { skipped: true, hasRemainingAfterSkip };
-  }, [addBlocked, canSkipCurrent, currentIndex, persistHistory, remainingIndices, removeUsed]);
+  }, [addBlocked, canSkipCurrent, currentId, persistHistory, remainingIds, removeUsed, validQuestionIds]);
 
   const usedCountInSelection = useMemo(() => {
-    return selectableIndices.filter((index) => usedSet.has(index)).length;
-  }, [selectableIndices, usedSet]);
+    return selectableIds.filter((id) => usedSet.has(id)).length;
+  }, [selectableIds, usedSet]);
 
   return {
-    questions: questions as Question[],
-    currentIndex,
-    currentQuestion: currentIndexInSelection && typeof currentIndex === 'number'
-      ? (questions[currentIndex] as Question)
+    questions,
+    currentId,
+    currentQuestion: currentIdInSelection && typeof currentId === 'string'
+      ? questionsById.get(currentId)
       : undefined,
-    history,
+    history: normalizedHistory,
     historyPointer: normalizedPointer,
     historyPointerInSelection: selectionPointer,
     historyCountInSelection: selectionHistoryPositions.length,
@@ -192,8 +227,8 @@ export default function useQuestionManager(selectedCategories: QuestionCategory[
     resetHistory,
     clearPersisted,
     resetAll,
-    remainingCount: remainingIndices.length,
-    filteredTotalCount: selectableIndices.length - skippedCountInSelection - blockedCountInSelection,
+    remainingCount: remainingIds.length,
+    filteredTotalCount: selectableIds.length - skippedCountInSelection - blockedCountInSelection,
     playableQuestionCount: questions.length - blockedCount,
     usedCount: size,
     usedCountInSelection,

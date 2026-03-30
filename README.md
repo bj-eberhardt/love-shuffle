@@ -11,26 +11,96 @@ oder einfach mal wieder tiefgründige Fragen stellen möchten.
 
 ## Kurzbeschreibung
 
-- Fragen kommen aus `src/data/questions.json` und werden per Zufall angezeigt.
-- Fokus auf Mobile-First UI: Hero-Intro, klarer Fragenmodus und konzentrierte Karte im Mittelpunkt.
-- Persistenz: bereits gespielte Fragen werden im Browser gespeichert (localStorage); man kann sie zurücksetzen.
+- Fragen werden zur Laufzeit aus `public/data/questions.json` geladen.
+- Die Kategorien sind fest vorgegeben und werden validiert.
+- Gespielte, übersprungene und dauerhaft gesperrte Fragen werden im Browser gespeichert.
+- Die App ist mobile-first gestaltet und kann statisch ausgeliefert werden.
 
-## Highlights / Features
+## Highlights
 
-- Mobile-first Design (responsive).
-- Shuffle-Button + Tastatur-Shortcut (Leertaste) für Desktop.
-- Persistenz der bereits gespielten Fragen (localStorage) mit Reset-Funktion.
-- Zentrierte Fragekarte im Fragenmodus, App-Bar mit Status im Header.
-- Schönes Congrats-View mit Konfetti, wenn alle Fragen gespielt wurden.
-- Docker-Multi-Stage-Build + nginx für statisches Hosting.
-- PWA-Meta / manifest für Standalone/Fullscreen auf Mobilgeräten (optional installierbar).
+- Mobile-first Design mit Intro-, Fragen- und Glückwunsch-Ansicht
+- Shuffle per Button, Leertaste und Enter
+- Kategorienfilter mit Modal
+- Temporäres Überspringen oder dauerhaftes Sperren einzelner Fragen
+- Fortschritt, History und Sperren bleiben im Browser erhalten
+- Laufzeitvalidierung der Fragen-Datei mit genauer Fehleranzeige im Frontend
+- Docker-Multi-Stage-Build mit nginx für statisches Hosting
+
+## Fragen-Datei
+
+Die App lädt ihre Fragen aus:
+
+```text
+/data/questions.json
+```
+
+### Format
+
+Die Datei muss ein JSON-Array mit Objekten sein:
+
+```json
+[
+  {
+    "id": "q001",
+    "text": "Wofür fühlst du dich in unserer Beziehung im Moment am meisten dankbar?",
+    "category": "verbundenheit-wachstum"
+  },
+  {
+    "id": "q002",
+    "text": "Was ist deine liebste Erinnerung an unsere gemeinsame Zeit?",
+    "category": "erinnerungen"
+  }
+]
+```
+
+### Pflichtfelder
+
+- `id`
+  Muss ein eindeutiger, nicht-leerer String sein.
+- `text`
+  Muss ein nicht-leerer String sein.
+- `category`
+  Muss eine der erlaubten Kategorien sein.
+
+### Erlaubte Kategorien
+
+- `sex-intimitaet`
+- `verbundenheit-wachstum`
+- `erinnerungen`
+- `beziehung`
+- `ueber-dich`
+
+## Eigene Fragen-Datei mit Docker Compose mounten
+
+Du kannst eine eigene Datei vom Host in den Container mounten und damit die Standardfragen ersetzen.
+
+Beispiel `docker-compose.yml`:
+
+```yaml
+services:
+  love-shuffle:
+    image: beberhardt/love-shuffle-app:latest
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    volumes:
+      - ./questions.json:/usr/share/nginx/html/data/questions.json:ro
+```
+
+Danach starten:
+
+```bash
+docker compose up -d
+```
+
+Die App lädt dann zur Laufzeit deine gemountete Datei statt der Standarddatei aus dem Image.
 
 ## Entwickler / Local Development
 
 ### Requirements
 
 - Node.js (Empfohlen: v24.x LTS). Die Datei `.nvmrc` enthält die gewünschte Version.
-- npm (oder pnpm/yarn)
+- npm
 - Docker zur lokalen Container-Ausführung falls gewünscht.
 
 #### 1) Node / Environment vorbereiten
@@ -70,22 +140,12 @@ Output liegt in `dist/`.
 npm run preview
 ```
 
+## Tests
 
-## Docker / Deployment (Docker Compose)
-
-Erstellung einer docker-compose.yml mit Inhalt:
-
-```yaml
-services:
-  love-shuffle:
-    image: beberhardt/love-shuffle-app:latest
-    ports:
-      - "8080:80"
-    restart: unless-stopped
-```
-
-Starten:
+E2E-Tests mit Playwright:
 
 ```bash
-docker compose up -d
+npm run test:e2e
 ```
+
+Headed/UI-Varianten hängen von deinen vorhandenen npm-Skripten ab.

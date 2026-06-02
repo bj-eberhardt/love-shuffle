@@ -65,7 +65,7 @@ export function SkipQuestionModal({
               onChange={(event) => onSavePreferenceChange(event.target.checked)}
               data-testid="skip-save-preference-checkbox"
             />
-            <span>Aktion fuer diese Session speichern</span>
+            <span>Aktion für diese Session speichern</span>
           </label>
         )}
       </div>

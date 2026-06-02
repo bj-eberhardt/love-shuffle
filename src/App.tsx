@@ -7,6 +7,12 @@ import useRuntimeQuestions from './hooks/useRuntimeQuestions';
 import type { Question, QuestionCategory } from './types/questions';
 import { requestDocumentFullscreen } from './utils/fullscreen';
 import { getCategorySummary, QUESTION_CATEGORY_ORDER } from './utils/questionCategories';
+import { safeGetSessionItem, safeSetSessionItem } from './utils/storage';
+
+type SkipMode = 'session' | 'permanent';
+
+const SKIP_MODAL_VIEW_COUNT_KEY = 'loveShuffle.skipModalViewCount.v1';
+const SKIP_MODAL_SAVED_ACTION_KEY = 'loveShuffle.skipModalSavedAction.v1';
 
 function haveSameCategories(a: QuestionCategory[], b: QuestionCategory[]) {
   return a.length === b.length && a.every((category, index) => category === b[index]);
@@ -52,6 +58,15 @@ function LoadedApp({
   const [restartPending, setRestartPending] = useState(false);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [isSkipModalOpen, setIsSkipModalOpen] = useState(false);
+  const [skipModalViewCount, setSkipModalViewCount] = useState(() => {
+    const storedValue = safeGetSessionItem<number>(SKIP_MODAL_VIEW_COUNT_KEY);
+    return typeof storedValue === 'number' && storedValue >= 0 ? storedValue : 0;
+  });
+  const [savedSkipAction, setSavedSkipAction] = useState<SkipMode | null>(() => {
+    const storedValue = safeGetSessionItem<SkipMode | null>(SKIP_MODAL_SAVED_ACTION_KEY);
+    return storedValue === 'session' || storedValue === 'permanent' ? storedValue : null;
+  });
+  const [saveSkipPreference, setSaveSkipPreference] = useState(false);
   const qm = useQuestionManager(questions, activeCategories, datasetKey);
   const version = __APP_VERSION__;
 
@@ -168,7 +183,7 @@ function LoadedApp({
     startRoundWithCategories(modalCategories);
   }, [modalCategories, startRoundWithCategories]);
 
-  const completeSkip = useCallback((modeToUse: 'session' | 'permanent') => {
+  const completeSkip = useCallback((modeToUse: SkipMode) => {
     const result = qm.skipCurrent(modeToUse);
     if (!result || !result.skipped) return;
 
@@ -191,8 +206,30 @@ function LoadedApp({
       modeToUse === 'permanent'
         ? 'Frage für dieses Spiel gesperrt. Du hast alle Fragen durchgespielt.'
         : 'Frage nur für heute übersprungen. Du hast alle Fragen durchgespielt.',
-    );
+      );
   }, [qm]);
+
+  const handleSkipChoice = useCallback((modeToUse: SkipMode) => {
+    if (saveSkipPreference) {
+      setSavedSkipAction(modeToUse);
+      safeSetSessionItem(SKIP_MODAL_SAVED_ACTION_KEY, modeToUse);
+    }
+
+    completeSkip(modeToUse);
+  }, [completeSkip, saveSkipPreference]);
+
+  const openSkipFlow = useCallback(() => {
+    if (savedSkipAction) {
+      completeSkip(savedSkipAction);
+      return;
+    }
+
+    const nextViewCount = skipModalViewCount + 1;
+    setSkipModalViewCount(nextViewCount);
+    safeSetSessionItem(SKIP_MODAL_VIEW_COUNT_KEY, nextViewCount);
+    setSaveSkipPreference(false);
+    setIsSkipModalOpen(true);
+  }, [completeSkip, savedSkipAction, skipModalViewCount]);
 
   useEffect(() => {
     if (!restartPending || qm.remainingCount === 0) return;
@@ -231,6 +268,7 @@ function LoadedApp({
   const canGoForward = qm.historyPointerInSelection >= 0 && qm.historyPointerInSelection < qm.historyCountInSelection - 1;
   const disableShuffle = shouldShowCongrats;
   const showSkip = !shouldShowCongrats && qm.canSkipCurrent;
+  const canSaveSkipPreference = skipModalViewCount >= 2;
 
   return (
     <main className={`app-shell ${mode === 'questions' ? 'mode-questions' : ''}`} data-testid="app-shell" data-mode={mode}>
@@ -291,7 +329,7 @@ function LoadedApp({
             setShowHint(false);
           }}
           onSkip={() => {
-            setIsSkipModalOpen(true);
+            openSkipFlow();
           }}
           onForward={() => {
             qm.forward();
@@ -306,8 +344,11 @@ function LoadedApp({
           showBack={canGoBack}
           showForward={canGoForward}
           isSkipModalOpen={isSkipModalOpen}
-          onSkipForSession={() => completeSkip('session')}
-          onSkipPermanently={() => completeSkip('permanent')}
+          canSaveSkipPreference={canSaveSkipPreference}
+          saveSkipPreference={saveSkipPreference}
+          onSaveSkipPreferenceChange={setSaveSkipPreference}
+          onSkipForSession={() => handleSkipChoice('session')}
+          onSkipPermanently={() => handleSkipChoice('permanent')}
           onCloseSkipModal={() => setIsSkipModalOpen(false)}
         />
       )}

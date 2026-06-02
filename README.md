@@ -146,3 +146,9 @@ E2E-Tests mit Playwright:
 ```bash
 npm run test:e2e
 ```
+
+oder mit UI
+
+```bash
+npm run test:e2e:ui
+```

@@ -246,6 +246,79 @@ test('skip is only shown on the latest visible question', async ({ page }) => {
   await expect(page.getByTestId('skip-button')).toBeVisible();
 });
 
+test('skip modal shows the session-save checkbox from the second opening onward', async ({ page }) => {
+  await page.getByTestId('start-round-button').click();
+
+  await page.getByTestId('skip-button').click();
+  await expect(page.getByTestId('skip-question-modal')).toBeVisible();
+  await expect(page.getByTestId('skip-save-preference-checkbox')).toHaveCount(0);
+  await page.getByTestId('close-skip-modal-button').click();
+
+  await expect(page.getByTestId('skip-question-modal')).toHaveCount(0);
+
+  await page.getByTestId('skip-button').click();
+  await expect(page.getByTestId('skip-question-modal')).toBeVisible();
+  await expect(page.getByTestId('skip-save-preference-checkbox')).toBeVisible();
+});
+
+test('saved skip action is reused within the browser session and resets in a new session', async ({ page, browser }) => {
+  await page.getByTestId('start-round-button').click();
+
+  await page.getByTestId('skip-button').click();
+  await page.getByTestId('close-skip-modal-button').click();
+
+  await page.getByTestId('skip-button').click();
+  await expect(page.getByTestId('skip-save-preference-checkbox')).toBeVisible();
+  await page.getByTestId('skip-save-preference-checkbox').check();
+  await page.getByTestId('skip-permanent-button').click();
+
+  let storageAfterFirstSavedSkip = await readGameStorage(page);
+  await expect(JSON.parse(storageAfterFirstSavedSkip.blocked ?? '[]')).toHaveLength(1);
+
+  const questionAfterFirstSavedSkip = await page.getByTestId('question-text').textContent();
+
+  await page.getByTestId('skip-button').click();
+  const modalAppearedDuringAutoSkip = await page.getByTestId('skip-question-modal')
+    .waitFor({ state: 'visible', timeout: 300 })
+    .then(() => true)
+    .catch(() => false);
+
+  expect(modalAppearedDuringAutoSkip).toBe(false);
+  await expect(page.getByTestId('skip-question-modal')).toHaveCount(0);
+  await expect(page.getByTestId('question-text')).not.toHaveText(questionAfterFirstSavedSkip ?? '');
+
+  storageAfterFirstSavedSkip = await readGameStorage(page);
+  await expect(JSON.parse(storageAfterFirstSavedSkip.blocked ?? '[]')).toHaveLength(2);
+
+  const newContext = await browser.newContext();
+  const newPage = await newContext.newPage();
+
+  try {
+    await bootstrapApp(newPage);
+    await newPage.goto('http://127.0.0.1:4173/');
+    await newPage.getByTestId('start-round-button').click();
+    await newPage.getByTestId('skip-button').click();
+
+    await expect(newPage.getByTestId('skip-question-modal')).toBeVisible();
+    await expect(newPage.getByTestId('skip-save-preference-checkbox')).toHaveCount(0);
+  } finally {
+    await newContext.close();
+  }
+});
+
+test('resuming a normal round still shows skip on the latest question', async ({ page }) => {
+  await page.getByTestId('start-round-button').click();
+  await page.getByTestId('shuffle-button').click();
+  await page.getByTestId('end-round-button').click();
+
+  await expect(page.getByTestId('hero-progress')).toContainText(`2 von ${QUESTION_COUNT}`);
+
+  await page.getByTestId('start-round-button').click();
+
+  await expect(page.getByTestId('question-position')).toHaveText(`2 / ${QUESTION_COUNT}`);
+  await expect(page.getByTestId('skip-button')).toBeVisible();
+});
+
 test('a skipped question becomes available again after a reload', async ({ page }) => {
   await page.getByTestId('start-round-button').click();
 

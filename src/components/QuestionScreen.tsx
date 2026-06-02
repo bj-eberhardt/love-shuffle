@@ -27,6 +27,9 @@ type QuestionScreenProps = {
   showBack?: boolean;
   showForward?: boolean;
   isSkipModalOpen: boolean;
+  canSaveSkipPreference: boolean;
+  saveSkipPreference: boolean;
+  onSaveSkipPreferenceChange: (checked: boolean) => void;
   onSkipForSession: () => void;
   onSkipPermanently: () => void;
   onCloseSkipModal: () => void;
@@ -54,6 +57,9 @@ export function QuestionScreen({
   showBack,
   showForward,
   isSkipModalOpen,
+  canSaveSkipPreference,
+  saveSkipPreference,
+  onSaveSkipPreferenceChange,
   onSkipForSession,
   onSkipPermanently,
   onCloseSkipModal,
@@ -102,6 +108,9 @@ export function QuestionScreen({
       )}
       <SkipQuestionModal
         isOpen={isSkipModalOpen}
+        canSavePreference={canSaveSkipPreference}
+        savePreference={saveSkipPreference}
+        onSavePreferenceChange={onSaveSkipPreferenceChange}
         onSkipForSession={onSkipForSession}
         onSkipPermanently={onSkipPermanently}
         onClose={onCloseSkipModal}

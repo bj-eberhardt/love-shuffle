@@ -1,5 +1,8 @@
 type SkipQuestionModalProps = {
   isOpen: boolean;
+  canSavePreference: boolean;
+  savePreference: boolean;
+  onSavePreferenceChange: (checked: boolean) => void;
   onSkipForSession: () => void;
   onSkipPermanently: () => void;
   onClose: () => void;
@@ -7,6 +10,9 @@ type SkipQuestionModalProps = {
 
 export function SkipQuestionModal({
   isOpen,
+  canSavePreference,
+  savePreference,
+  onSavePreferenceChange,
   onSkipForSession,
   onSkipPermanently,
   onClose,
@@ -46,6 +52,22 @@ export function SkipQuestionModal({
             Für dieses Spiel sperren
           </button>
         </div>
+
+        {canSavePreference && (
+          <label
+            className="modal-card__copy"
+            style={{ display: 'flex', gap: 10, alignItems: 'center', width: '100%', marginTop: 12 }}
+            data-testid="skip-save-preference-label"
+          >
+            <input
+              type="checkbox"
+              checked={savePreference}
+              onChange={(event) => onSavePreferenceChange(event.target.checked)}
+              data-testid="skip-save-preference-checkbox"
+            />
+            <span>Aktion für diese Session speichern</span>
+          </label>
+        )}
       </div>
     </div>
   );

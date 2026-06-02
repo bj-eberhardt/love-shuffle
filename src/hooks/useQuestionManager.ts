@@ -142,10 +142,13 @@ export default function useQuestionManager(
       return false;
     }
 
-    setSkipCandidateId(null);
-    setHistoryPointer(selectionHistoryPositions[selectionHistoryPositions.length - 1]);
+    const latestHistoryPosition = selectionHistoryPositions[selectionHistoryPositions.length - 1];
+    const latestId = normalizedHistory[latestHistoryPosition];
+
+    setSkipCandidateId(typeof latestId === 'string' ? latestId : null);
+    setHistoryPointer(latestHistoryPosition);
     return true;
-  }, [selectionHistoryPositions]);
+  }, [normalizedHistory, selectionHistoryPositions]);
 
   const resetHistory = useCallback(() => {
     setHistory([]);

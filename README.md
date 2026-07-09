@@ -8,6 +8,10 @@ für mehr Nähe, Gespräche und ehrliche Momente zu zweit.
 Bietet sich perfekt für Paare an, die etwas Abwechslung in ihre Gespräche bringen wollen, 
 oder einfach mal wieder tiefgründige Fragen stellen möchten.
 
+Live-Preview auf github: [https://bj-eberhardt.github.io/love-shuffle/](https://bj-eberhardt.github.io/love-shuffle/)
+
+Weitere Spiele von uns findet ihr auf [https://love-games.app](https://love-games.app).
+
 
 ## Kurzbeschreibung
 

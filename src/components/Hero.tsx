@@ -1,3 +1,5 @@
+import { getPublicAssetUrl } from '../utils/assets';
+
 export function Hero({
   usedCount,
   total,
@@ -15,7 +17,7 @@ export function Hero({
 }) {
   return (
     <section className="hero" data-testid="hero">
-      <img className="hero__icon" src="/assets/heart-badge.svg" alt="Herz Symbol" />
+      <img className="hero__icon" src={getPublicAssetUrl('assets/heart-badge.svg')} alt="Herz Symbol" />
       <p className="hero__eyebrow">Love Shuffle</p>
       <h1>Fragen für Nähe, Liebe und ehrliche Gefühle</h1>
       <p className="hero__copy">

@@ -1,5 +1,6 @@
 import React from 'react';
 import type { QuestionCategory } from '../types/questions';
+import { getPublicAssetUrl } from '../utils/assets';
 import { QUESTION_CATEGORY_META } from '../utils/questionCategories';
 
 function renderHighlightedCategoryLabels(categories: QuestionCategory[]) {
@@ -36,7 +37,7 @@ export function CongratsPanel({
 }: CongratsPanelProps) {
   return (
     <div className="congrats-card" data-testid="congrats-card">
-      <img src="/assets/heart-badge.svg" className="congrats-card__asset" alt="Erfolg" />
+      <img src={getPublicAssetUrl('assets/heart-badge.svg')} className="congrats-card__asset" alt="Erfolg" />
       <h2>Glückwunsch!</h2>
       <p data-testid="congrats-message">
         {allQuestionsPlayed ? (

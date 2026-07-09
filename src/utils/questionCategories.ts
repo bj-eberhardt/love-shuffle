@@ -1,4 +1,5 @@
 import type { QuestionCategory } from '../types/questions';
+import { getPublicAssetUrl } from './assets';
 
 export const QUESTION_CATEGORY_ORDER: QuestionCategory[] = [
   'sex-intimitaet',
@@ -14,27 +15,27 @@ export const QUESTION_CATEGORY_META: Record<
 > = {
   'sex-intimitaet': {
     label: 'Sex & Intimität',
-    iconSrc: '/assets/category-sex-intimitaet.svg',
+    iconSrc: getPublicAssetUrl('assets/category-sex-intimitaet.svg'),
     accentClassName: 'question-card--sex-intimitaet',
   },
   'verbundenheit-wachstum': {
     label: 'Verbundenheit & Wachstum',
-    iconSrc: '/assets/category-verbundenheit-wachstum.svg',
+    iconSrc: getPublicAssetUrl('assets/category-verbundenheit-wachstum.svg'),
     accentClassName: 'question-card--verbundenheit-wachstum',
   },
   erinnerungen: {
     label: 'Erinnerungen',
-    iconSrc: '/assets/category-erinnerungen.svg',
+    iconSrc: getPublicAssetUrl('assets/category-erinnerungen.svg'),
     accentClassName: 'question-card--erinnerungen',
   },
   beziehung: {
     label: 'Beziehung',
-    iconSrc: '/assets/category-beziehung.svg',
+    iconSrc: getPublicAssetUrl('assets/category-beziehung.svg'),
     accentClassName: 'question-card--beziehung',
   },
   'ueber-dich': {
     label: 'Über dich',
-    iconSrc: '/assets/category-ueber-dich.svg',
+    iconSrc: getPublicAssetUrl('assets/category-ueber-dich.svg'),
     accentClassName: 'question-card--ueber-dich',
   },
 };

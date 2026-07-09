@@ -1,4 +1,5 @@
 import type { QuestionCategory } from '../types/questions';
+import { getPublicAssetUrl } from '../utils/assets';
 import { CategoryFilterModal } from './CategoryFilterModal';
 import { Hero } from './Hero';
 import { HomeFooter } from './HomeFooter';
@@ -53,7 +54,7 @@ export function IntroScreen({
         onClose={onCloseFilterModal}
       />
       <aside className="tips" data-testid="intro-tips">
-        <img className="tips__asset" src="/assets/rose-wave.svg" alt="Romantische Illustration" />
+        <img className="tips__asset" src={getPublicAssetUrl('assets/rose-wave.svg')} alt="Romantische Illustration" />
         <div>
           <h2>Kleine Idee für eure Runde</h2>
           <p>

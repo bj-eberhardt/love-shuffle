@@ -7,7 +7,7 @@
   "theme_color": "#fff8fb",
   "icons": [
     {
-      "src": "/assets/heart-badge.svg",
+      "src": "assets/heart-badge.svg",
       "sizes": "192x192",
       "type": "image/svg+xml"
     }

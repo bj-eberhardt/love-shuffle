@@ -1,4 +1,5 @@
 import type { QuestionsValidationIssue } from '../types/questions';
+import { getPublicAssetUrl } from '../utils/assets';
 
 type QuestionsDataStateProps =
   | {
@@ -15,7 +16,7 @@ export function QuestionsDataState(props: QuestionsDataStateProps) {
     return (
       <section className="status-panel status-panel--data-state" data-testid="questions-loading-state">
         <div className="status-panel__badge" aria-hidden="true">
-          <img src="/assets/heart-badge.svg" alt="" />
+          <img src={getPublicAssetUrl('assets/heart-badge.svg')} alt="" />
         </div>
         <p className="status-panel__eyebrow">Love Shuffle</p>
         <h1>Fragen werden geladen</h1>

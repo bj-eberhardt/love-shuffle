@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import type { QuestionsLoadResult } from '../types/questions';
 import { loadQuestionsFromRuntimeFile } from '../utils/questionLoader';
 
-const QUESTIONS_FILE_URL = '/data/questions.json';
+const QUESTIONS_FILE_URL = `${import.meta.env.BASE_URL}data/questions.json`;
 
 export default function useRuntimeQuestions(): QuestionsLoadResult {
   const [result, setResult] = useState<QuestionsLoadResult>({ status: 'loading' });

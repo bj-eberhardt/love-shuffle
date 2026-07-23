@@ -1,6 +1,6 @@
 # Love Shuffle
 
-![Bild](public/assets/heart-badge.svg)
+![Bild](docs/love-shuffle-teaser.png)
 
 Eine kleine App, die euch in einer gemütlichen Runde zufällige Herzensfragen stellt — 
 für mehr Nähe, Gespräche und ehrliche Momente zu zweit.

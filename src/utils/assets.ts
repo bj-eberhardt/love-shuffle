@@ -1,3 +1,4 @@
 export function getPublicAssetUrl(path: string) {
-  return `${import.meta.env.BASE_URL}${path.replace(/^\/+/, '')}`;
+  const baseUrl = import.meta.env?.BASE_URL ?? '/';
+  return `${baseUrl}${path.replace(/^\/+/, '')}`;
 }

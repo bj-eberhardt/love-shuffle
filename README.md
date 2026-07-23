@@ -1,12 +1,25 @@
 # Love Shuffle
 
-![Bild](public/assets/heart-badge.svg)
+![Bild](docs/love-shuffle-teaser.png)
 
 Eine kleine App, die euch in einer gemütlichen Runde zufällige Herzensfragen stellt — 
 für mehr Nähe, Gespräche und ehrliche Momente zu zweit.
 
 Bietet sich perfekt für Paare an, die etwas Abwechslung in ihre Gespräche bringen wollen, 
 oder einfach mal wieder tiefgründige Fragen stellen möchten.
+
+
+<table>
+  <tr>
+    <td><img src="docs/1.png" width="200"></td>
+    <td><img src="docs/2.png" width="200"></td>
+  </tr>
+  <tr>
+    <td><img src="docs/3.png" width="200"></td>
+    <td><img src="docs/4.png" width="200"></td>
+  </tr>
+</table>
+
 
 Live-Preview auf github: [https://bj-eberhardt.github.io/love-shuffle/](https://bj-eberhardt.github.io/love-shuffle/)
 

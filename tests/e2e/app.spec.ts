@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-// @ts-ignore
+// @ts-expect-error - JSON import attributes are supported by the test runtime.
 import questions from '../../public/data/questions.json' with { type: 'json' };
 import type { Question, QuestionCategory } from '../../src/types/questions';
 import { createQuestionsDatasetKey } from '../../src/utils/questionLoader';

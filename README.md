@@ -1,6 +1,6 @@
 # Love Shuffle
 
-![Bild](docs/love-shuffle-teaser.png)
+![Bild](srcassets/banner_desktop.png)
 
 Eine kleine App, die euch in einer gemütlichen Runde zufällige Herzensfragen stellt — 
 für mehr Nähe, Gespräche und ehrliche Momente zu zweit.
@@ -11,12 +11,12 @@ oder einfach mal wieder tiefgründige Fragen stellen möchten.
 
 <table>
   <tr>
-    <td><img src="docs/1.png" width="200"></td>
-    <td><img src="docs/2.png" width="200"></td>
+    <td><img src="srcassets/screen-1.png" width="200"></td>
+    <td><img src="srcassets/screen-2.png" width="200"></td>
   </tr>
   <tr>
-    <td><img src="docs/3.png" width="200"></td>
-    <td><img src="docs/4.png" width="200"></td>
+    <td><img src="srcassets/screen-3.png" width="200"></td>
+    <td><img src="srcassets/screen-4.png" width="200"></td>
   </tr>
 </table>
 

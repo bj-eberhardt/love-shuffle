@@ -75,14 +75,14 @@ export function QuestionScreen({
 
   return (
     <>
-      <Header title="Love Shuffle" status={statusMessage} filterSummary={activeFilterSummary} onEnd={onEnd} />
+      <Header status={statusMessage} filterSummary={activeFilterSummary} onEnd={onEnd} />
       {shouldShowCongrats && !question ? (
-        <div className="question-area" style={{ position: 'relative' }} data-testid="all-played-view">
+        <div className="question-area question-area--stacked" data-testid="all-played-view">
           {congratsPanel}
           <Confetti />
         </div>
       ) : (
-        <div className="question-area" style={{ position: 'relative' }} data-testid={shouldShowCongrats ? 'all-played-view' : 'question-flow-view'}>
+        <div className="question-area question-area--stacked" data-testid={shouldShowCongrats ? 'all-played-view' : 'question-flow-view'}>
           <QuestionArea
             question={question}
             index={index}

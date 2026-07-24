@@ -1,0 +1,17 @@
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title">
+  <title id="title">Love Shuffle</title>
+  <rect width="192" height="192" rx="44" fill="#17020B"/>
+  <rect x="8" y="8" width="176" height="176" rx="38" stroke="#FF5D8D" stroke-opacity="0.55" stroke-width="4"/>
+  <g filter="url(#glow)">
+    <path d="M96 135C89 135 83 132 78 127L43 93C23 74 23 43 43 24C63 5 94 5 114 24L96 42L78 24C98 5 129 5 149 24C169 43 169 74 149 93L114 127C109 132 103 135 96 135Z" fill="#F35A83"/>
+    <path d="M58 51C64 38 74 31 89 29" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round"/>
+    <path d="M61 151H99C112 151 119 135 134 135H154" stroke="#FFFFFF" stroke-width="11" stroke-linecap="round"/>
+    <path d="M142 121L159 135L142 149" stroke="#FFFFFF" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <defs>
+    <filter id="glow" x="11" y="-2" width="170" height="174" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#FF3F7B" flood-opacity="0.65"/>
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#050007" flood-opacity="0.55"/>
+    </filter>
+  </defs>
+</svg>

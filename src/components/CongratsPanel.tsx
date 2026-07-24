@@ -37,7 +37,7 @@ export function CongratsPanel({
 }: CongratsPanelProps) {
   return (
     <div className="congrats-card" data-testid="congrats-card">
-      <img src={getPublicAssetUrl('assets/heart-badge.svg')} className="congrats-card__asset" alt="Erfolg" />
+      <img src={getPublicAssetUrl('assets/love-shuffle-icon.svg')} className="congrats-card__asset" alt="Erfolg" />
       <h2>Glückwunsch!</h2>
       <p data-testid="congrats-message">
         {allQuestionsPlayed ? (

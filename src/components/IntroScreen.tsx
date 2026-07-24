@@ -1,10 +1,12 @@
-import type { QuestionCategory } from '../types/questions';
+import { useMemo } from 'react';
+import type { Question, QuestionCategory } from '../types/questions';
 import { getPublicAssetUrl } from '../utils/assets';
 import { CategoryFilterModal } from './CategoryFilterModal';
 import { Hero } from './Hero';
 import { HomeFooter } from './HomeFooter';
 
 type IntroScreenProps = {
+  questions: Question[];
   usedCount: number;
   total: number;
   version: string;
@@ -21,6 +23,7 @@ type IntroScreenProps = {
 };
 
 export function IntroScreen({
+  questions,
   usedCount,
   total,
   version,
@@ -35,9 +38,19 @@ export function IntroScreen({
   onStartFilteredRound,
   onCloseFilterModal,
 }: IntroScreenProps) {
+  const cardQuestion = useMemo(() => {
+    const eligibleQuestions = questions.filter((question) => question.category !== 'sex-intimitaet');
+    const questionPool = eligibleQuestions.length > 0 ? eligibleQuestions : questions;
+
+    if (questionPool.length === 0) return '';
+
+    return questionPool[Math.floor(Math.random() * questionPool.length)].text;
+  }, [questions]);
+
   return (
     <>
       <Hero
+        cardQuestion={cardQuestion}
         usedCount={usedCount}
         total={total}
         onStart={onStart}
@@ -54,7 +67,7 @@ export function IntroScreen({
         onClose={onCloseFilterModal}
       />
       <aside className="tips" data-testid="intro-tips">
-        <img className="tips__asset" src={getPublicAssetUrl('assets/rose-wave.svg')} alt="Romantische Illustration" />
+        <img className="tips__asset" src={getPublicAssetUrl('assets/kiss.png')} alt="Romantische Illustration" />
         <div>
           <h2>Kleine Idee für eure Runde</h2>
           <p>

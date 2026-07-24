@@ -1,6 +1,7 @@
 import { getPublicAssetUrl } from '../utils/assets';
 
 export function Hero({
+  cardQuestion,
   usedCount,
   total,
   onStart,
@@ -8,6 +9,7 @@ export function Hero({
   onOpenFilters,
   activeFilterSummary,
 }: {
+  cardQuestion?: string;
   usedCount: number;
   total: number;
   onStart: () => void;
@@ -17,12 +19,14 @@ export function Hero({
 }) {
   return (
     <section className="hero" data-testid="hero">
-      <img className="hero__icon" src={getPublicAssetUrl('assets/heart-badge.svg')} alt="Herz Symbol" />
-      <p className="hero__eyebrow">Love Shuffle</p>
-      <h1>Fragen für Nähe, Liebe und ehrliche Gefühle</h1>
+      <img className="hero__logo" src={getPublicAssetUrl('assets/logo-loveshuffle-white.png')} alt="Love Shuffle" />
+      {cardQuestion && <p className="hero__card-question" aria-hidden="true">{cardQuestion}</p>}
+      <h1>
+        <span className="hero__headline-small">Kleine Fragen.</span>
+        <span className="hero__headline-large">Große Verbindung.</span>
+      </h1>
       <p className="hero__copy">
-        Ziehe mit einem Klick eine neue Herzensfrage und entdeckt
-        gemeinsam zärtliche, ehrliche Gespräche.
+        Über 90 romantische Paarfragen, die euch näher zusammenbringen.
       </p>
 
       <div className="hero__split-row" data-testid="hero-actions">
@@ -39,7 +43,7 @@ export function Hero({
               onClick={onOpenFilters}
               data-testid="open-start-menu-button"
             >
-              <span className="split-button__chevron" aria-hidden="true" />
+              <span className="split-button__shuffle-mark" aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -54,7 +58,7 @@ export function Hero({
         </p>
       )}
 
-      <div style={{ marginTop: 12 }} data-testid="hero-progress">
+      <div className="hero__progress" data-testid="hero-progress">
         <small>{usedCount} von {total} Fragen gespielt</small>
       </div>
     </section>

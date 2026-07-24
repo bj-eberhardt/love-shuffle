@@ -49,7 +49,7 @@ export function QuestionArea({
       {index !== undefined ? (
         question ? <QuestionCard key={index} question={question} index={index} total={total} /> : null
       ) : (
-        <div className="question-card" style={{ textAlign: 'center' }}>
+        <div className="question-card question-card--empty">
           <p className="question-card__text">Noch keine Frage gewählt.</p>
         </div>
       )}

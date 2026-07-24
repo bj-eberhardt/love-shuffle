@@ -277,6 +277,7 @@ function LoadedApp({
 
       {mode === 'intro' && (
         <IntroScreen
+          questions={questions}
           usedCount={qm.usedCountInSelection}
           total={qm.filteredTotalCount}
           version={version}

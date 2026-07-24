@@ -20,8 +20,8 @@ export function Controls({
   showForward?: boolean;
 }) {
   return (
-    <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: 18 }} data-testid="question-controls">
-      <div className="actions" style={{ maxWidth: 520 }}>
+    <div className="question-controls" data-testid="question-controls">
+      <div className="actions">
         <button
           className="button button--primary actions__button actions__button--shuffle"
           type="button"

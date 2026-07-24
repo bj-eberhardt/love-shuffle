@@ -16,7 +16,7 @@ export function QuestionsDataState(props: QuestionsDataStateProps) {
     return (
       <section className="status-panel status-panel--data-state" data-testid="questions-loading-state">
         <div className="status-panel__badge" aria-hidden="true">
-          <img src={getPublicAssetUrl('assets/heart-badge.svg')} alt="" />
+          <img src={getPublicAssetUrl('assets/love-shuffle-icon.svg')} alt="" />
         </div>
         <p className="status-panel__eyebrow">Love Shuffle</p>
         <h1>Fragen werden geladen</h1>

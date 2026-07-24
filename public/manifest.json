@@ -3,13 +3,13 @@
   "short_name": "LoveShuffle",
   "start_url": ".",
   "display": "standalone",
-  "background_color": "#fff8fb",
-  "theme_color": "#fff8fb",
+  "background_color": "#17020B",
+  "theme_color": "#17020B",
   "icons": [
     {
-      "src": "assets/heart-badge.svg",
-      "sizes": "192x192",
-      "type": "image/svg+xml"
+      "src": "assets/logo-small.png",
+      "sizes": "822x822",
+      "type": "image/png"
     }
   ]
 }
